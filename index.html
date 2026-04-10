@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TKJ Skansa Binut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">TKJ Skansa Binut</div>
+    <div class="nav-music">
+      <span class="music-note">♪</span>
+      <span class="music-label" id="music-label">Putar Musik</span>
+      <button class="btn-music" id="btn-music" onclick="toggleMusic()">
+        <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <!-- Ganti src dengan path file .mp3 kamu -->
+      <audio id="bg-music" loop>
+        <source src="music.mp3/Music.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="hero">
+    <div class="hero-decoration"></div>
+    <div class="hero-content">
+      <p class="hero-label">Biodata Kelas</p>
+      <h1 class="hero-title">X TJKT </h1>
+      <p class="hero-sub">SMK Negeri 1 Bintan Utara · Tahun Ajaran 2025/2026</p>
+
+      <div class="visi-misi">
+        <div class="visi-block">
+          <h3 class="vm-heading">Visi</h3>
+          <p class="vm-text">Menjadi kelas unggulan yang melahirkan generasi teknisi jaringan komputer yang kompeten, berkarakter, dan siap bersaing di era digital global.</p>
+        </div>
+        <div class="vm-divider"></div>
+        <div class="misi-block">
+          <h3 class="vm-heading">Misi</h3>
+          <ul class="vm-list">
+            <li>Membangun semangat belajar yang tinggi dan disiplin dalam setiap kegiatan.</li>
+            <li>Mengembangkan kompetensi teknis jaringan komputer secara menyeluruh.</li>
+            <li>Menumbuhkan jiwa kolaboratif, kreatif, dan inovatif antar sesama siswa.</li>
+            <li>Menjaga kebersamaan dan kekompakan sebagai keluarga besar TKJ.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SEARCH BAR -->
+  <section class="search-section">
+    <div class="search-wrap">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" class="search-input" placeholder="Cari nama siswa..." oninput="filterSiswa()" />
+    </div>
+    <p class="search-count" id="search-count">Menampilkan 39 siswa</p>
+  </section>
+
+  <!-- WALI KELAS -->
+  <!-- WALI KELAS -->
+  <section class="section-wali">
+    <div class="wali-card">
+      <h2 class="section-title">Wali Kelas</h2>
+      <div class="wali-photo-wrap" onclick="openLightbox('Foto/ibu.jpg', 'Ibu Eva Aini S.E')">
+        <img src="Foto/ibu.jpg" alt="Wali Kelas" class="wali-photo" onerror="this.src='https://ui-avatars.com/api/?name=Wali+Kelas&background=C5D9F0&color=4A7BB5&size=300&font-size=0.33'" />
+        <div class="photo-overlay"><span>🔍</span></div>
+      </div>
+      <h3 class="wali-name">Ibu Eva Aini S.E</h3>
+      <p class="wali-sub">Wali Kelas X TJKT</p>
+    </div>
+  </section>
+
+
+  <!-- GRID SISWA -->
+  <section class="section-siswa">
+    <h2 class="section-title">Biodata Siswa</h2>
+    <div class="siswa-grid" id="siswa-grid">
+      <!-- Cards di-generate oleh JavaScript -->
+    </div>
+    <p class="no-result" id="no-result" style="display:none;">Siswa tidak ditemukan..</p>
+  </section>
+
+  <!-- GALERI KENANGAN -->
+  <section class="section-galeri">
+    <h2 class="section-title">Galeri Kenangan</h2>
+    <p class="galeri-sub">Momen berharga yang takkan terlupakan bersama keluarga besar TKJ Skansa Binut.</p>
+    <div class="galeri-grid">
+      <!-- 8 slot foto galeri -->
+      <div class="galeri-item galeri-big" onclick="openLightbox('Foto/2.jpg', 'Foto Bersama 1')">
+        <img src="Foto/2.jpg" alt="Foto Bersama 1" onerror="this.src='https://ui-avatars.com/api/?name=Foto+1&background=DDEEFF&color=5588BB&size=600'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/8.jpg', 'Foto Bersama 2')">
+        <img src="Foto/8.jpg" alt="Foto 2" onerror="this.src='https://ui-avatars.com/api/?name=Foto+2&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/5.jpg', 'Foto Bersama 3')">
+        <img src="Foto/5.jpg" alt="Foto 3" onerror="this.src='https://ui-avatars.com/api/?name=Foto+3&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/2.jpg', 'Foto Bersama 4')">
+        <img src="Foto/2.jpg" alt="Foto 4" onerror="this.src='https://ui-avatars.com/api/?name=Foto+4&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/3.jpg', 'Foto Bersama 5')">
+        <img src="Foto/3.jpg" alt="Foto 5" onerror="this.src='https://ui-avatars.com/api/?name=Foto+5&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item galeri-tall" onclick="openLightbox('Foto/6.jpg', 'Foto Bersama 6')">
+        <img src="Foto/6.jpg" alt="Foto 6" onerror="this.src='https://ui-avatars.com/api/?name=Foto+6&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/7.jpg', 'Foto Bersama 7')">
+        <img src="Foto/7.jpg" alt="Foto 7" onerror="this.src='https://ui-avatars.com/api/?name=Foto+7&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+      <div class="galeri-item" onclick="openLightbox('Foto/1.jpg', 'Foto Bersama 8')">
+        <img src="Foto/1.jpg" alt="Foto 8" onerror="this.src='https://ui-avatars.com/api/?name=Foto+8&background=DDEEFF&color=5588BB&size=400'" />
+        <div class="galeri-overlay"><span>Foto Bersama</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>© 2025 TJKT Skansa Binut · SMK Negeri 1 Bintan Utara</p>
+    <p class="footer-sub">Dibuat dengan Sigma Oleh M.Gilang R.</p>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="" />
+      <p id="lightbox-caption"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
