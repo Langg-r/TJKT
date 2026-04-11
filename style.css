@@ -612,7 +612,22 @@ body {
 
   .siswa-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 0.6rem;
+  }
+
+  .siswa-body {
+    padding: 0.6rem 0.6rem 0.7rem;
+    gap: .2rem;
+  }
+
+  .siswa-name {
+    font-size: .78rem;
+  }
+
+  .siswa-hobi,
+  .siswa-quote,
+  .siswa-ig {
+    font-size: .65rem;
   }
 
   .galeri-grid {
@@ -625,5 +640,5 @@ body {
 }
 
 @media (max-width: 380px) {
-  .siswa-grid { grid-template-columns: 1fr; }
+  .siswa-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 }
