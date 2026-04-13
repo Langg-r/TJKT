@@ -727,13 +727,13 @@ body {
   .visi-misi  { gap: 2rem; }
 
   .siswa-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
   }
 
-  .siswa-body { padding: 0.6rem 0.6rem 0.7rem; gap: .2rem; }
-  .siswa-name { font-size: .78rem; }
-  .siswa-hobi, .siswa-quote, .siswa-ig { font-size: .65rem; }
+  .siswa-body { padding: 0.4rem 0.4rem 0.5rem; gap: .15rem; }
+  .siswa-name { font-size: .65rem; }
+  .siswa-hobi, .siswa-quote, .siswa-ig { font-size: .58rem; }
 
   .galeri-grid { grid-template-columns: repeat(2, 1fr); }
   .galeri-big  { grid-column: span 2; grid-row: auto; aspect-ratio: 16/9; }
@@ -744,5 +744,7 @@ body {
 }
 
 @media (max-width: 380px) {
-  .siswa-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .siswa-grid { grid-template-columns: repeat(3, 1fr); gap: 0.3rem; }
+  .siswa-name { font-size: .6rem; }
+  .siswa-hobi, .siswa-quote, .siswa-ig { font-size: .55rem; }
 }
