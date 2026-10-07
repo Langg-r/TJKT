@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -25,7 +27,7 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="nav-brand">
+    <div class="nav-brand" id="nav-brand-trigger">
       <img src="Foto/logoo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'" />
       One Genicons
     </div>
@@ -75,7 +77,7 @@
   </header>
 
   <!-- SEARCH BAR -->
-  <section class="search-section">
+  <section class="search-section" id="section-search">
     <div class="search-wrap">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" id="search-input" class="search-input" placeholder="Cari nama siswa..." oninput="filterSiswa()" />
@@ -97,7 +99,7 @@
   </section>
 
   <!-- GRID SISWA -->
-  <section class="section-siswa">
+  <section class="section-siswa" id="section-siswa">
     <h2 class="section-title">Biodata Siswa</h2>
 
     <!-- FILTER BUTTONS -->
@@ -112,7 +114,7 @@
   </section>
 
   <!-- GALERI KENANGAN -->
-  <section class="section-galeri">
+  <section class="section-galeri" id="section-foto">
     <h2 class="section-title">Galeri Kenangan</h2>
     <p class="galeri-sub">Momen berharga yang takkan terlupakan bersama keluarga besar TKJ Skansa Binut.</p>
     <div class="galeri-grid">
@@ -167,9 +169,143 @@
   </div>
 
   <!-- BACK TO TOP -->
-  <button class="btn-backtotop" id="btn-backtotop" onclick="scrollToTop()" title="Kembali ke atas">
+  <button class="btn-backtotop" id="btn-backtotop" onclick="scrollToTop()" title="Kembali ke atas" style="bottom:5.5rem;">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bnav-btn" onclick="bnav('search')" id="bnav-search">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="bnav-btn" onclick="bnav('siswa')" id="bnav-siswa">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Siswa</span>
+    </button>
+    <button class="bnav-btn" onclick="bnav('foto')" id="bnav-foto">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>Foto</span>
+    </button>
+    <button class="bnav-btn" onclick="window.location.href='playlist.html'" id="bnav-playlist">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>Playlist</span>
+    </button>
+  </nav>
+
+  <!-- MODAL EDITOR (trigger: "langskuy") -->
+  <div class="editor-overlay" id="editor-overlay" onclick="closeEditorModal()"></div>
+  <div class="editor-modal" id="editor-modal">
+    <div class="editor-header">
+      <h2 class="editor-title">✦ Editor Panel</h2>
+      <button class="editor-close" onclick="closeEditorModal()">✕</button>
+    </div>
+    <!-- TABS -->
+    <div class="editor-tabs">
+      <button class="etab active" id="etab-siswa" onclick="switchEditorTab('siswa')">Tambah Siswa</button>
+      <button class="etab" id="etab-lagu" onclick="switchEditorTab('lagu')">Tambah Lagu</button>
+      <button class="etab" id="etab-edit" onclick="switchEditorTab('edit')">✏ Edit</button>
+      <button class="etab" id="etab-hapus" onclick="switchEditorTab('hapus')">🗑 Hapus</button>
+    </div>
+
+    <!-- FORM TAMBAH SISWA -->
+    <div class="editor-pane" id="epane-siswa">
+      <form class="editor-form" id="form-siswa" onsubmit="submitSiswa(event)">
+        <label class="elabel">Nama Lengkap</label>
+        <input class="einput" type="text" id="es-nama" placeholder="Nama lengkap siswa" required />
+        <label class="elabel">Hobi</label>
+        <input class="einput" type="text" id="es-hobi" placeholder="Hobi siswa" />
+        <label class="elabel">Quote</label>
+        <input class="einput" type="text" id="es-quote" placeholder="Quote favorit" />
+        <label class="elabel">Instagram (tanpa @)</label>
+        <input class="einput" type="text" id="es-ig" placeholder="username_instagram" />
+        <label class="elabel">Gender</label>
+        <select class="einput" id="es-gender">
+          <option value="perempuan">Perempuan</option>
+          <option value="laki">Laki-laki</option>
+        </select>
+        <label class="elabel">Foto Siswa</label>
+        <input class="einput" type="file" id="es-foto" accept="image/*" />
+        <button class="ebtn-submit" type="submit" id="ebtn-siswa">
+          <span id="ebtn-siswa-text">Simpan Siswa</span>
+          <span id="ebtn-siswa-load" style="display:none">Menyimpan…</span>
+        </button>
+        <p class="editor-msg" id="emsg-siswa"></p>
+      </form>
+    </div>
+
+    <!-- FORM TAMBAH LAGU -->
+    <div class="editor-pane" id="epane-lagu" style="display:none">
+      <form class="editor-form" id="form-lagu" onsubmit="submitLagu(event)">
+        <label class="elabel">Judul Lagu</label>
+        <input class="einput" type="text" id="el-judul" placeholder="Judul lagu" required />
+        <label class="elabel">Artis</label>
+        <input class="einput" type="text" id="el-artis" placeholder="Nama artis" required />
+        <label class="elabel">Cover / Thumbnail</label>
+        <input class="einput" type="file" id="el-cover" accept="image/*" required />
+        <label class="elabel">File Audio (MP3)</label>
+        <input class="einput" type="file" id="el-audio" accept="audio/*" required />
+        <label class="elabel">Lirik (format LRC)</label>
+        <textarea class="einput etextarea" id="el-lirik" placeholder="[00:15.00] Teks lirik baris pertama&#10;[00:18.50] Baris kedua lirik" rows="7"></textarea>
+        <p class="elabel-hint">Format: <code>[menit:detik.mili] Teks lirik</code> — satu baris per baris lirik.</p>
+        <button class="ebtn-submit" type="submit" id="ebtn-lagu">
+          <span id="ebtn-lagu-text">Upload & Simpan Lagu</span>
+          <span id="ebtn-lagu-load" style="display:none">Mengupload…</span>
+        </button>
+        <p class="editor-msg" id="emsg-lagu"></p>
+      </form>
+    </div>
+    <!-- PANE EDIT DATA -->
+    <div class="editor-pane" id="epane-edit" style="display:none">
+
+      <!-- Edit Siswa -->
+      <div class="hapus-section">
+        <h3 class="hapus-heading">Edit Data Siswa</h3>
+        <p class="hapus-sub">Klik "Edit" pada siswa untuk mengubah data.</p>
+        <button class="ebtn-load" onclick="loadSiswaEditList()">Muat Daftar Siswa</button>
+        <ul class="hapus-list" id="edit-siswa-list"></ul>
+        <p class="editor-msg" id="emsg-edit-siswa"></p>
+      </div>
+
+      <div class="hapus-divider"></div>
+
+      <!-- Edit Lagu -->
+      <div class="hapus-section">
+        <h3 class="hapus-heading">Edit Data Lagu</h3>
+        <p class="hapus-sub">Klik "Edit" pada lagu untuk mengubah judul, artis, atau lirik.</p>
+        <button class="ebtn-load" onclick="loadLaguEditList()">Muat Daftar Lagu</button>
+        <ul class="hapus-list" id="edit-lagu-list"></ul>
+        <p class="editor-msg" id="emsg-edit-lagu"></p>
+      </div>
+
+    </div>
+
+    <!-- PANE HAPUS DATA -->
+    <div class="editor-pane" id="epane-hapus" style="display:none">
+
+      <!-- Hapus Lagu -->
+      <div class="hapus-section">
+        <h3 class="hapus-heading">Hapus Lagu</h3>
+        <p class="hapus-sub">Data akan diambil langsung dari database.</p>
+        <button class="ebtn-load" id="ebtn-load-lagu" onclick="loadLaguList()">Muat Daftar Lagu</button>
+        <ul class="hapus-list" id="hapus-lagu-list"></ul>
+        <p class="editor-msg" id="emsg-hapus-lagu"></p>
+      </div>
+
+      <div class="hapus-divider"></div>
+
+      <!-- Hapus Siswa -->
+      <div class="hapus-section">
+        <h3 class="hapus-heading">Hapus Siswa</h3>
+        <p class="hapus-sub">Hapus data siswa dari database Supabase.</p>
+        <button class="ebtn-load" id="ebtn-load-siswa" onclick="loadSiswaList()">Muat Daftar Siswa</button>
+        <ul class="hapus-list" id="hapus-siswa-list"></ul>
+        <p class="editor-msg" id="emsg-hapus-siswa"></p>
+      </div>
+
+    </div>
+
+  </div><!-- end editor-modal -->
 
   <script src="script.js"></script>
 </body>

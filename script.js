@@ -3,6 +3,23 @@
    ========================================= */
 
 /* ==========================================
+   SUPABASE INIT — safe, tidak blokir loading
+   ========================================== */
+const SUPABASE_URL = 'https://sytcbztlwbvfkdfeakct.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5dGNienRsd2J2ZmtkZmVha2N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODYxMDQsImV4cCI6MjEwNjk2MjEwNH0.SmY24xoVlUV4GuWtK00hNciy4WNUyC-4DtqNJvn8FEQ';
+
+let _supabase = null;
+function getSupabase() {
+  if (_supabase) return _supabase;
+  try {
+    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    console.error('Supabase gagal diinisialisasi:', e);
+  }
+  return _supabase;
+}
+
+/* ==========================================
    DATA SISWA
    ========================================== */
 const DATA_SISWA = [
@@ -263,4 +280,603 @@ function scrollToTop() {
    ========================================== */
 document.addEventListener('DOMContentLoaded', () => {
   renderSiswa(DATA_SISWA);
+  initEditorTrigger();
 });
+
+/* ==========================================
+   BOTTOM NAVIGATION — smooth scroll
+   ========================================== */
+function bnav(target) {
+  const map = {
+    search: 'section-search',
+    siswa:  'section-siswa',
+    foto:   'section-foto',
+  };
+  const el = document.getElementById(map[target]);
+  if (el) {
+    // offset: 60px navbar + 10px breathing room
+    const y = el.getBoundingClientRect().top + window.scrollY - 70;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+  // highlight active nav button
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('bnav-' + target);
+  if (btn) btn.classList.add('active');
+}
+
+/* ==========================================
+   MODAL EDITOR — Trigger: ketik "langskuy"
+   ========================================== */
+let typedBuffer = '';
+const TRIGGER_WORD = 'langskuy';
+
+function initEditorTrigger() {
+  document.addEventListener('keydown', (e) => {
+    // Izinkan trigger dari search bar, blokir dari input lain (form editor, dll)
+    const tag = e.target.tagName.toLowerCase();
+    const isSearchBar = e.target.id === 'search-input';
+
+    if (['input', 'textarea', 'select'].includes(tag) && !isSearchBar) return;
+
+    // hanya karakter huruf
+    if (e.key.length === 1) {
+      typedBuffer += e.key.toLowerCase();
+      // jaga panjang buffer agar tidak tumbuh tak terbatas
+      if (typedBuffer.length > TRIGGER_WORD.length) {
+        typedBuffer = typedBuffer.slice(-TRIGGER_WORD.length);
+      }
+      if (typedBuffer === TRIGGER_WORD) {
+        typedBuffer = '';
+        // bersihkan search bar kalau trigger dari sana
+        if (isSearchBar) {
+          e.target.value = '';
+          filterSiswa();
+        }
+        openEditorModal();
+      }
+    }
+  });
+}
+
+function openEditorModal() {
+  document.getElementById('editor-overlay').classList.add('active');
+  document.getElementById('editor-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditorModal() {
+  document.getElementById('editor-overlay').classList.remove('active');
+  document.getElementById('editor-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function switchEditorTab(tab) {
+  const tabs = ['siswa', 'lagu', 'edit', 'hapus'];
+  tabs.forEach(t => {
+    document.getElementById('etab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('epane-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+/* ==========================================
+   FORM TAMBAH SISWA (Supabase)
+   ========================================== */
+async function submitSiswa(e) {
+  e.preventDefault();
+  const btn  = document.getElementById('ebtn-siswa');
+  const msg  = document.getElementById('emsg-siswa');
+  const btnText = document.getElementById('ebtn-siswa-text');
+  const btnLoad = document.getElementById('ebtn-siswa-load');
+
+  const name     = document.getElementById('es-nama').value.trim();
+  const hobbies  = document.getElementById('es-hobi').value.trim() || '--';
+  const quote    = document.getElementById('es-quote').value.trim() || '--';
+  const ig       = document.getElementById('es-ig').value.trim()   || '--';
+  const gender   = document.getElementById('es-gender').value;
+  const fotoFile = document.getElementById('es-foto').files[0];
+
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+  msg.textContent = '';
+  msg.className = 'editor-msg';
+
+  try {
+    let fotoUrl = null;
+
+    if (fotoFile) {
+      const ext  = fotoFile.name.split('.').pop();
+      const path = `students/${Date.now()}_${name.replace(/\s+/g, '_')}.${ext}`;
+      const { error: upErr } = await getSupabase().storage
+        .from('media')
+        .upload(path, fotoFile, { upsert: true });
+
+      if (upErr) throw upErr;
+
+      const { data: urlData } = getSupabase().storage.from('media').getPublicUrl(path);
+      fotoUrl = urlData.publicUrl;
+    }
+
+    const { error: dbErr } = await getSupabase().from('students').insert({
+      name:      name,
+      gender:    gender,
+      hobbies:   hobbies,
+      quote:     quote,
+      image_url: fotoUrl
+    });
+    if (dbErr) throw dbErr;
+
+    msg.textContent = '✓ Siswa berhasil disimpan!';
+    msg.classList.add('ok');
+    document.getElementById('form-siswa').reset();
+
+  } catch (err) {
+    msg.textContent = '✕ Gagal: ' + (err.message || err);
+    msg.classList.add('err');
+  } finally {
+    btn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+/* ==========================================
+   FORM TAMBAH LAGU (Supabase Storage + DB)
+   ========================================== */
+async function submitLagu(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('ebtn-lagu');
+  const msg     = document.getElementById('emsg-lagu');
+  const btnText = document.getElementById('ebtn-lagu-text');
+  const btnLoad = document.getElementById('ebtn-lagu-load');
+
+  const title    = document.getElementById('el-judul').value.trim();
+  const artist   = document.getElementById('el-artis').value.trim();
+  const lyrics   = document.getElementById('el-lirik').value.trim();
+  const coverFile = document.getElementById('el-cover').files[0];
+  const audioFile = document.getElementById('el-audio').files[0];
+
+  if (!coverFile || !audioFile) {
+    showMsg(msg, 'err', '✕ Pilih file cover dan audio terlebih dulu.');
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+  msg.textContent = '';
+  msg.className = 'editor-msg';
+
+  try {
+    // Upload Cover
+    const coverExt  = coverFile.name.split('.').pop();
+    const coverPath = `covers/${Date.now()}_${title.replace(/\s+/g, '_')}.${coverExt}`;
+    const { error: covErr } = await getSupabase().storage.from('media').upload(coverPath, coverFile, { upsert: true });
+    if (covErr) throw covErr;
+    const { data: covUrl } = getSupabase().storage.from('media').getPublicUrl(coverPath);
+
+    // Upload Audio
+    const audioExt  = audioFile.name.split('.').pop();
+    const audioPath = `audio/${Date.now()}_${title.replace(/\s+/g, '_')}.${audioExt}`;
+    const { error: audErr } = await getSupabase().storage.from('media').upload(audioPath, audioFile, { upsert: true });
+    if (audErr) throw audErr;
+    const { data: audUrl } = getSupabase().storage.from('media').getPublicUrl(audioPath);
+
+    // Insert ke tabel playlists
+    const { error: dbErr } = await getSupabase().from('playlists').insert({
+      title:     title,
+      artist:    artist,
+      cover_url: covUrl.publicUrl,
+      audio_url: audUrl.publicUrl,
+      lyrics:    lyrics
+    });
+    if (dbErr) throw dbErr;
+
+    showMsg(msg, 'ok', '✓ Lagu berhasil diupload & disimpan!');
+    document.getElementById('form-lagu').reset();
+
+  } catch (err) {
+    showMsg(msg, 'err', '✕ Gagal: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+function showMsg(el, type, text) {
+  el.textContent = text;
+  el.className = 'editor-msg ' + type;
+}
+
+/* ==========================================
+   HAPUS DATA — Muat & Hapus Lagu
+   ========================================== */
+async function loadLaguList() {
+  const list = document.getElementById('hapus-lagu-list');
+  const msg  = document.getElementById('emsg-hapus-lagu');
+  list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Memuat…</li>';
+  msg.textContent = '';
+
+  const { data, error } = await getSupabase()
+    .from('playlists')
+    .select('id, title, artist')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = '';
+    showMsg(msg, 'err', '✕ Gagal memuat: ' + error.message);
+    return;
+  }
+
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada lagu.</li>';
+    return;
+  }
+
+  data.forEach(song => {
+    const li = document.createElement('li');
+    li.className = 'hapus-item';
+    li.id = 'lagu-item-' + song.id;
+    li.innerHTML = `
+      <div class="hapus-item-info">
+        <div class="hapus-item-name">${escHtml(song.title)}</div>
+        <div class="hapus-item-sub">${escHtml(song.artist || '—')}</div>
+      </div>
+      <button class="ebtn-hapus" onclick="hapusLagu('${song.id}')">Hapus</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+async function hapusLagu(id) {
+  const msg = document.getElementById('emsg-hapus-lagu');
+  if (!confirm('Yakin hapus lagu ini?')) return;
+
+  const { error } = await getSupabase().from('playlists').delete().eq('id', id);
+  if (error) {
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  // hapus dari UI
+  const el = document.getElementById('lagu-item-' + id);
+  if (el) el.remove();
+  showMsg(msg, 'ok', '✓ Lagu berhasil dihapus.');
+}
+
+/* ==========================================
+   HAPUS DATA — Muat & Hapus Siswa
+   ========================================== */
+async function loadSiswaList() {
+  const list = document.getElementById('hapus-siswa-list');
+  const msg  = document.getElementById('emsg-hapus-siswa');
+  list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Memuat…</li>';
+  msg.textContent = '';
+
+  const { data, error } = await getSupabase()
+    .from('students')
+    .select('id, name, gender')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = '';
+    showMsg(msg, 'err', '✕ Gagal memuat: ' + error.message);
+    return;
+  }
+
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada data siswa di database.</li>';
+    return;
+  }
+
+  data.forEach(siswa => {
+    const li = document.createElement('li');
+    li.className = 'hapus-item';
+    li.id = 'siswa-item-' + siswa.id;
+    li.innerHTML = `
+      <div class="hapus-item-info">
+        <div class="hapus-item-name">${escHtml(siswa.name)}</div>
+        <div class="hapus-item-sub">${siswa.gender === 'laki' ? '♂ Laki-laki' : '♀ Perempuan'}</div>
+      </div>
+      <button class="ebtn-hapus" onclick="hapusSiswa('${siswa.id}')">Hapus</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+async function hapusSiswa(id) {
+  const msg = document.getElementById('emsg-hapus-siswa');
+  if (!confirm('Yakin hapus siswa ini?')) return;
+
+  const { error } = await getSupabase().from('students').delete().eq('id', id);
+  if (error) {
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  const el = document.getElementById('siswa-item-' + id);
+  if (el) el.remove();
+  showMsg(msg, 'ok', '✓ Siswa berhasil dihapus.');
+}
+
+/* ==========================================
+   MOBILE TRIGGER — Tap logo navbar 5x
+   ========================================== */
+(function initMobileTapTrigger() {
+  const brand = document.getElementById('nav-brand-trigger');
+  if (!brand) return;
+
+  const REQUIRED_TAPS = 5;
+  const TAP_TIMEOUT   = 2500; // reset setelah 2.5 detik idle
+  let tapCount  = 0;
+  let tapTimer  = null;
+
+  // Buat indikator titik-titik
+  const dotWrap = document.createElement('span');
+  dotWrap.className = 'tap-dot';
+  dotWrap.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < REQUIRED_TAPS; i++) {
+    const dot = document.createElement('span');
+    dotWrap.appendChild(dot);
+  }
+  brand.appendChild(dotWrap);
+
+  function updateDots() {
+    const dots = dotWrap.querySelectorAll('span');
+    dots.forEach((d, i) => d.classList.toggle('lit', i < tapCount));
+    dotWrap.classList.toggle('visible', tapCount > 0);
+  }
+
+  function resetTap() {
+    tapCount = 0;
+    clearTimeout(tapTimer);
+    updateDots();
+  }
+
+  brand.addEventListener('click', (e) => {
+    tapCount++;
+    updateDots();
+
+    clearTimeout(tapTimer);
+
+    if (tapCount >= REQUIRED_TAPS) {
+      resetTap();
+      openEditorModal();
+      return;
+    }
+
+    tapTimer = setTimeout(resetTap, TAP_TIMEOUT);
+  });
+})();
+
+/* ==========================================
+   EDIT DATA — Load & Edit Siswa
+   ========================================== */
+async function loadSiswaEditList() {
+  const list = document.getElementById('edit-siswa-list');
+  const msg  = document.getElementById('emsg-edit-siswa');
+  list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Memuat…</li>';
+  msg.textContent = '';
+
+  const { data, error } = await getSupabase()
+    .from('students')
+    .select('id, name, hobbies, quote, gender')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    list.innerHTML = '';
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada data.</li>';
+    return;
+  }
+
+  data.forEach(siswa => {
+    const li = document.createElement('li');
+    li.className = 'hapus-item edit-item';
+    li.id = 'edit-siswa-' + siswa.id;
+    li.innerHTML = `
+      <div class="hapus-item-info">
+        <div class="hapus-item-name">${escHtml(siswa.name)}</div>
+        <div class="hapus-item-sub">${siswa.gender === 'laki' ? '♂' : '♀'} · ${escHtml(siswa.hobbies || '—')}</div>
+      </div>
+      <button class="ebtn-edit" onclick="toggleEditSiswaForm('${siswa.id}')">Edit</button>
+    `;
+
+    // inline edit form (hidden by default)
+    const form = document.createElement('div');
+    form.className = 'inline-edit-form';
+    form.id = 'ief-siswa-' + siswa.id;
+    form.style.display = 'none';
+    form.innerHTML = `
+      <label class="elabel">Nama</label>
+      <input class="einput" id="ief-nama-${siswa.id}" value="${escHtml(siswa.name)}" />
+      <label class="elabel">Hobi</label>
+      <input class="einput" id="ief-hobi-${siswa.id}" value="${escHtml(siswa.hobbies || '')}" />
+      <label class="elabel">Quote</label>
+      <input class="einput" id="ief-quote-${siswa.id}" value="${escHtml(siswa.quote || '')}" />
+      <label class="elabel">Instagram (tanpa @)</label>
+      <input class="einput" id="ief-ig-${siswa.id}" value="" />
+      <label class="elabel">Gender</label>
+      <select class="einput" id="ief-gender-${siswa.id}">
+        <option value="perempuan" ${siswa.gender === 'perempuan' ? 'selected' : ''}>Perempuan</option>
+        <option value="laki" ${siswa.gender === 'laki' ? 'selected' : ''}>Laki-laki</option>
+      </select>
+      <div class="ief-actions">
+        <button class="ebtn-submit ief-save" onclick="saveSiswa('${siswa.id}')">
+          <span id="ief-siswa-save-${siswa.id}">Simpan</span>
+        </button>
+        <button class="ebtn-cancel" onclick="toggleEditSiswaForm('${siswa.id}')">Batal</button>
+      </div>
+      <p class="editor-msg" id="ief-msg-siswa-${siswa.id}"></p>
+    `;
+
+    const wrapper = document.createElement('li');
+    wrapper.style.cssText = 'list-style:none;padding:0;';
+    wrapper.appendChild(li);
+    wrapper.appendChild(form);
+    list.appendChild(wrapper);
+  });
+}
+
+function toggleEditSiswaForm(id) {
+  const form = document.getElementById('ief-siswa-' + id);
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  // update tombol teks
+  const btn = document.querySelector(`#edit-siswa-${id} .ebtn-edit`);
+  if (btn) btn.textContent = isOpen ? 'Edit' : 'Tutup';
+}
+
+async function saveSiswa(id) {
+  const msg     = document.getElementById('ief-msg-siswa-' + id);
+  const saveBtn = document.getElementById('ief-siswa-save-' + id);
+
+  const name     = document.getElementById('ief-nama-'   + id).value.trim();
+  const hobbies  = document.getElementById('ief-hobi-'   + id).value.trim();
+  const quote    = document.getElementById('ief-quote-'  + id).value.trim();
+  const gender   = document.getElementById('ief-gender-' + id).value;
+
+  if (!name) { showMsg(msg, 'err', '✕ Nama tidak boleh kosong.'); return; }
+
+  saveBtn.textContent = 'Menyimpan…';
+
+  const { error } = await getSupabase()
+    .from('students')
+    .update({ name: name, hobbies: hobbies, quote: quote, gender: gender })
+    .eq('id', id);
+
+  saveBtn.textContent = 'Simpan';
+
+  if (error) {
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  showMsg(msg, 'ok', '✓ Data berhasil diperbarui!');
+
+  // update tampilan nama di item
+  const nameEl = document.querySelector(`#edit-siswa-${id} .hapus-item-name`);
+  if (nameEl) nameEl.textContent = name;
+  const subEl = document.querySelector(`#edit-siswa-${id} .hapus-item-sub`);
+  if (subEl) subEl.textContent = `${gender === 'laki' ? '♂' : '♀'} · ${hobbies || '—'}`;
+}
+
+/* ==========================================
+   EDIT DATA — Load & Edit Lagu
+   ========================================== */
+async function loadLaguEditList() {
+  const list = document.getElementById('edit-lagu-list');
+  const msg  = document.getElementById('emsg-edit-lagu');
+  list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Memuat…</li>';
+  msg.textContent = '';
+
+  const { data, error } = await getSupabase()
+    .from('playlists')
+    .select('id, title, artist, lyrics')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    list.innerHTML = '';
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada lagu.</li>';
+    return;
+  }
+
+  data.forEach(song => {
+    const li = document.createElement('li');
+    li.className = 'hapus-item edit-item';
+    li.id = 'edit-lagu-' + song.id;
+    li.innerHTML = `
+      <div class="hapus-item-info">
+        <div class="hapus-item-name">${escHtml(song.title)}</div>
+        <div class="hapus-item-sub">${escHtml(song.artist || '—')}</div>
+      </div>
+      <button class="ebtn-edit" onclick="toggleEditLaguForm('${song.id}')">Edit</button>
+    `;
+
+    const form = document.createElement('div');
+    form.className = 'inline-edit-form';
+    form.id = 'ief-lagu-' + song.id;
+    form.style.display = 'none';
+
+    // escape lirik untuk value textarea (ganti " dengan &quot;)
+    const lyricsEsc = (song.lyrics || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    form.innerHTML = `
+      <label class="elabel">Judul</label>
+      <input class="einput" id="ief-title-${song.id}" value="${escHtml(song.title)}" />
+      <label class="elabel">Artis</label>
+      <input class="einput" id="ief-artist-${song.id}" value="${escHtml(song.artist || '')}" />
+      <label class="elabel">Lirik (LRC)</label>
+      <textarea class="einput etextarea" id="ief-lyrics-${song.id}" rows="6">${lyricsEsc}</textarea>
+      <p class="elabel-hint">Format: <code>[mm:ss.xx] Teks lirik</code></p>
+      <div class="ief-actions">
+        <button class="ebtn-submit ief-save" onclick="saveLagu('${song.id}')">
+          <span id="ief-lagu-save-${song.id}">Simpan</span>
+        </button>
+        <button class="ebtn-cancel" onclick="toggleEditLaguForm('${song.id}')">Batal</button>
+      </div>
+      <p class="editor-msg" id="ief-msg-lagu-${song.id}"></p>
+    `;
+
+    const wrapper = document.createElement('li');
+    wrapper.style.cssText = 'list-style:none;padding:0;';
+    wrapper.appendChild(li);
+    wrapper.appendChild(form);
+    list.appendChild(wrapper);
+  });
+}
+
+function toggleEditLaguForm(id) {
+  const form = document.getElementById('ief-lagu-' + id);
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  const btn = document.querySelector(`#edit-lagu-${id} .ebtn-edit`);
+  if (btn) btn.textContent = isOpen ? 'Edit' : 'Tutup';
+}
+
+async function saveLagu(id) {
+  const msg     = document.getElementById('ief-msg-lagu-' + id);
+  const saveBtn = document.getElementById('ief-lagu-save-' + id);
+
+  const title  = document.getElementById('ief-title-'  + id).value.trim();
+  const artist = document.getElementById('ief-artist-' + id).value.trim();
+  const lyrics = document.getElementById('ief-lyrics-' + id).value.trim();
+
+  if (!title) { showMsg(msg, 'err', '✕ Judul tidak boleh kosong.'); return; }
+
+  saveBtn.textContent = 'Menyimpan…';
+
+  const { error } = await getSupabase()
+    .from('playlists')
+    .update({ title, artist, lyrics })
+    .eq('id', id);
+
+  saveBtn.textContent = 'Simpan';
+
+  if (error) {
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  showMsg(msg, 'ok', '✓ Lagu berhasil diperbarui!');
+
+  // update tampilan di list
+  const nameEl = document.querySelector(`#edit-lagu-${id} .hapus-item-name`);
+  if (nameEl) nameEl.textContent = title;
+  const subEl = document.querySelector(`#edit-lagu-${id} .hapus-item-sub`);
+  if (subEl) subEl.textContent = artist || '—';
+}
