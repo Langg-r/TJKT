@@ -8,7 +8,7 @@
 const DATA_SISWA = [
   { nama: "Muhammad Gilang Romadhon",        foto: "Foto/gilang.jpg",   hobi: "Gaming & Coding",               quote: "Code today, lead tomorrow.",                    ig: "--", gender: "laki" },
   { nama: "Dwi Ananta Susila Yudha",         foto: "Foto/yudha.jpg",    hobi: "Push Rank & Nonton Marapthon",  quote: "Perjalanan jauh dimulai dari satu langkah.",    ig: "--", gender: "laki" },
-  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilangg.jpg",  hobi: "Gooning & Gaming",              quote: "Jangan Melihat Orang Hanya Dari Kulitnya",     ig: "--", gender: "laki" },
+  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilangg.jpg",  hobi: "Gooning & Gaming",              quote: "Jangan Melihat Orang Hanya Dari Kulitnya yang hitam legam",     ig: "--", gender: "laki" },
   { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpg",    hobi: "ngoprek samsung & Elektronik",  quote: "Gagal adalah awal dari Keputus asaan",          ig: "--", gender: "laki" },
   { nama: "Wan Dizzy Zulfahri",              foto: "Foto/wan.jpg",      hobi: "Volly & Selfie",                quote: "Ada Waktunya untuk Tinggi.",                    ig: "--", gender: "laki" },
   { nama: "Muhardi",                         foto: "Foto/muhardi.jpg",  hobi: "Olahraga & Balap",              quote: "Aku bisa berhentiin hujan.",                    ig: "--", gender: "laki" },
