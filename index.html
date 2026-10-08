@@ -252,7 +252,10 @@
           <option value="laki">Laki-laki</option>
         </select>
         <label class="elabel">Foto Siswa</label>
-        <input class="einput" type="file" id="es-foto" accept="image/*" />
+        <div class="dropzone" id="dz-foto">
+          <span class="dz-text">Tarik & lepas foto di sini atau klik untuk upload</span>
+          <input class="einput" type="file" id="es-foto" accept="image/*" />
+        </div>
         <button class="ebtn-submit" type="submit" id="ebtn-siswa">
           <span id="ebtn-siswa-text">Simpan Siswa</span>
           <span id="ebtn-siswa-load" style="display:none">Menyimpan…</span>
@@ -269,9 +272,15 @@
         <label class="elabel">Artis</label>
         <input class="einput" type="text" id="el-artis" placeholder="Nama artis" required />
         <label class="elabel">Cover / Thumbnail</label>
-        <input class="einput" type="file" id="el-cover" accept="image/*" required />
+        <div class="dropzone" id="dz-cover">
+          <span class="dz-text">Tarik & lepas cover di sini atau klik untuk upload</span>
+          <input class="einput" type="file" id="el-cover" accept="image/*" required />
+        </div>
         <label class="elabel">File Audio (MP3)</label>
-        <input class="einput" type="file" id="el-audio" accept="audio/*" required />
+        <div class="dropzone" id="dz-audio">
+          <span class="dz-text">Tarik & lepas audio di sini atau klik untuk upload</span>
+          <input class="einput" type="file" id="el-audio" accept="audio/*" required />
+        </div>
         <label class="elabel">Lirik (format LRC)</label>
         <textarea class="einput etextarea" id="el-lirik" placeholder="[00:15.00] Teks lirik baris pertama&#10;[00:18.50] Baris kedua lirik" rows="7"></textarea>
         <p class="elabel-hint">Format: <code>[menit:detik.mili] Teks lirik</code> — satu baris per baris lirik.</p>
