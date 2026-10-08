@@ -311,23 +311,22 @@ let typedBuffer = '';
 const TRIGGER_WORD = 'langskuy';
 
 function initEditorTrigger() {
+  // Keydown untuk desktop (non-input areas)
   document.addEventListener('keydown', (e) => {
-    // Izinkan trigger dari search bar, blokir dari input lain (form editor, dll)
     const tag = e.target.tagName.toLowerCase();
     const isSearchBar = e.target.id === 'search-input';
 
+    // Skip jika di input lain (form editor, dll), tapi proses dari search bar tetap
     if (['input', 'textarea', 'select'].includes(tag) && !isSearchBar) return;
 
     // hanya karakter huruf
     if (e.key.length === 1) {
       typedBuffer += e.key.toLowerCase();
-      // jaga panjang buffer agar tidak tumbuh tak terbatas
       if (typedBuffer.length > TRIGGER_WORD.length) {
         typedBuffer = typedBuffer.slice(-TRIGGER_WORD.length);
       }
       if (typedBuffer === TRIGGER_WORD) {
         typedBuffer = '';
-        // bersihkan search bar kalau trigger dari sana
         if (isSearchBar) {
           e.target.value = '';
           filterSiswa();
@@ -336,6 +335,20 @@ function initEditorTrigger() {
       }
     }
   });
+
+  // Input event untuk search bar (mobile-friendly)
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase();
+      // Check apakah value mengandung trigger word
+      if (val.includes(TRIGGER_WORD)) {
+        e.target.value = '';
+        filterSiswa();
+        openLoginModal();
+      }
+    });
+  }
 }
 
 function openLoginModal() {
