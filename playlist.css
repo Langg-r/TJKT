@@ -1,6 +1,6 @@
 /* =========================================
    PLAYLIST PAGE — playlist.css
-   Spotify-style dark UI
+   Spotify-style dark UI with split screen
    ========================================= */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +26,7 @@
   --font:        'Poppins', sans-serif;
   --transition:  .25s ease;
   /* Player height — keep in sync with JS */
-  --player-h:    175px;
+  --player-h:    140px;
   --lyrics-h:    240px;
 }
 
@@ -35,6 +35,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font);
   background: var(--bg);
+  background: linear-gradient(160deg, #0f2027, #1a2a3a, #0d1117);
   color: var(--text-main);
   min-height: 100vh;
   /* space for lyrics panel + player */
@@ -52,11 +53,11 @@ body {
 .pl-header {
   position: relative;
   overflow: hidden;
-  padding: 3.5rem 1.5rem 2.5rem;
+  padding: 1rem 1.5rem;
   background: linear-gradient(160deg, #0f2027, #1a2a3a, #0d1117);
   display: flex;
-  align-items: flex-end;
-  gap: 1rem;
+  flex-direction: column;
+  gap: .75rem;
 }
 
 .pl-header-art {
@@ -66,6 +67,13 @@ body {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(29,185,84,.12) 0%, transparent 70%);
   pointer-events: none;
+}
+
+.header-left {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  z-index: 1;
 }
 
 .pl-back {
@@ -96,7 +104,7 @@ body {
 }
 
 .pl-title {
-  font-size: clamp(2rem, 7vw, 3.5rem);
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
   font-weight: 700;
   letter-spacing: -.03em;
   line-height: 1.05;
@@ -104,6 +112,42 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.pl-search-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-soft);
+  pointer-events: none;
+}
+
+#pl-search {
+  width: 100%;
+  padding: .75rem 1rem .75rem 2.8rem;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: .88rem;
+  outline: none;
+  transition: background .3s, border-color .3s;
+}
+
+#pl-search::placeholder {
+  color: var(--text-soft);
+}
+
+#pl-search:focus {
+  background: rgba(255,255,255,.12);
+  border-color: var(--accent);
 }
 
 /* =========================================
@@ -135,9 +179,82 @@ body {
 .pl-empty svg { opacity: .35; }
 
 /* =========================================
-   MAIN CONTENT
+   MOBILE TABS
    ========================================= */
-.pl-main { padding: 1.2rem 0 .5rem; }
+.mobile-tabs {
+  display: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: .5rem 1rem;
+  gap: .5rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: .65rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-mid);
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.tab-btn.active {
+  background: var(--accent);
+  color: #000;
+}
+
+/* =========================================
+   SPLIT SCREEN LAYOUT
+   ========================================= */
+.split-container {
+  display: grid;
+  grid-template-columns: 1fr 4px 1fr;
+  gap: 0;
+  padding-bottom: var(--player-h);
+}
+
+.divider {
+  background: var(--border);
+  cursor: col-resize;
+  position: relative;
+  transition: background .2s;
+}
+
+.divider:hover {
+  background: var(--accent);
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 40px;
+  background: var(--surface);
+  border-radius: 99px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.divider:hover::before {
+  opacity: 1;
+}
+
+/* =========================================
+   MAIN CONTENT (LEFT PANEL)
+   ========================================= */
+.pl-main { 
+  padding: 1.2rem 0 .5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
+}
 
 .pl-count {
   font-size: .72rem;
@@ -219,21 +336,102 @@ body {
 }
 
 /* =========================================
-   LYRICS PANEL
+   RIGHT PANEL
    ========================================= */
-.lyrics-panel {
+.right-panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.expand-btn-wrap {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.expand-btn:hover {
+  background: rgba(255,255,255,.16);
+  transform: scale(1.1);
+}
+
+.display-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+  transition: all .4s ease;
+}
+
+.right-panel.expanded .display-area {
   position: fixed;
-  bottom: var(--player-h);
+  top: 0;
   left: 0;
   right: 0;
-  height: var(--lyrics-h);
-  background: linear-gradient(to bottom, rgba(13,17,23,0) 0%, rgba(13,17,23,.97) 18%);
-  overflow: hidden;
-  z-index: 200;
-  transition: transform .4s cubic-bezier(.32,1,.64,1), opacity .3s ease;
+  bottom: var(--player-h);
+  z-index: 500;
+  background: var(--bg);
+  padding: 3rem 2rem;
 }
+
+.cover-wrapper {
+  flex-shrink: 0;
+  margin-bottom: 2rem;
+  transition: all .4s ease;
+}
+
+.big-cover {
+  width: 280px;
+  height: 280px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--surface2);
+  box-shadow: var(--shadow-lg);
+  transition: all .35s ease;
+}
+
+.big-cover.spinning {
+  animation: coverSpin 8s linear infinite;
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(29,185,84,.4);
+}
+
+.right-panel.expanded .big-cover {
+  width: 340px;
+  height: 340px;
+}
+
+/* =========================================
+   LYRICS PANEL (in right panel)
+   ========================================= */
+.lyrics-panel {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  transition: opacity .3s ease;
+}
+
 .lyrics-panel.hidden {
-  transform: translateY(100%);
   opacity: 0;
   pointer-events: none;
 }
@@ -243,11 +441,10 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
-  padding: 1.8rem 2rem 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: .55rem;
-  /* hide scrollbar */
   scrollbar-width: none;
 }
 .lyrics-inner::-webkit-scrollbar { display: none; }
@@ -261,18 +458,24 @@ body {
 }
 
 .lyric-line {
-  font-size: .88rem;
+  font-size: 1.1rem;
   color: var(--text-soft);
-  line-height: 1.55;
+  line-height: 1.6;
   text-align: center;
   transition: color .25s ease, font-size .25s ease, font-weight .25s ease, opacity .25s ease;
   opacity: .55;
+  cursor: pointer;
   user-select: none;
+}
+
+.lyric-line:hover {
+  color: var(--text-mid);
+  opacity: .75;
 }
 
 .lyric-line.active {
   color: #ffffff;
-  font-size: .98rem;
+  font-size: 1.3rem;
   font-weight: 600;
   opacity: 1;
   text-shadow: 0 0 20px rgba(29,185,84,.35);
@@ -280,12 +483,14 @@ body {
 
 .lyric-line.near {
   color: var(--text-mid);
+  font-size: 1.15rem;
   opacity: .8;
 }
 
 /* =========================================
    AUDIO PLAYER (fixed bottom)
    ========================================= */
+/* Player layout - 3 sections */
 .player {
   position: fixed;
   bottom: 0;
@@ -297,12 +502,32 @@ body {
   border-top: 1px solid var(--border);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  padding: .85rem 1.25rem .7rem;
+  padding: .5rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 -6px 32px rgba(0,0,0,.5);
+  padding-bottom: calc(.5rem + env(safe-area-inset-bottom, 0));
+}
+
+@media (max-width: 900px) {
+  .player {
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .player-center { grid-column: 1 / span 2; order: 3; }
+  .player-right { display: none; }
+}
+
+/* Center section for progress & main controls */
+.player-center {
   display: flex;
   flex-direction: column;
-  gap: .55rem;
-  box-shadow: 0 -6px 32px rgba(0,0,0,.5);
-  padding-bottom: calc(.7rem + env(safe-area-inset-bottom, 0));
+  gap: .5rem;
+  align-items: center;
 }
 
 /* Now-playing info */
@@ -351,6 +576,7 @@ body {
 
 /* Progress bar */
 .player-progress-wrap {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: .6rem;
@@ -406,6 +632,14 @@ body {
   align-items: center;
   justify-content: center;
   gap: .2rem;
+  margin-bottom: .15rem;
+}
+
+.player-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .5rem;
 }
 
 .ctrl-btn {
@@ -471,6 +705,61 @@ body {
 /* =========================================
    RESPONSIVE
    ========================================= */
+@media (max-width: 768px) {
+  .mobile-tabs {
+    display: flex;
+  }
+  
+  .split-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  
+  .divider {
+    display: none;
+  }
+  
+  .pl-main {
+    display: none;
+  }
+  
+  .pl-main.active {
+    display: block;
+  }
+  
+  .right-panel {
+    display: none;
+  }
+  
+  .right-panel.active {
+    display: flex;
+  }
+  
+  .right-panel.expanded .display-area {
+    bottom: var(--player-h);
+  }
+  
+  .big-cover {
+    width: 240px;
+    height: 240px;
+  }
+  
+  .right-panel.expanded .big-cover {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .player {
+    height: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .player-center { grid-column: 1 / span 2; order: 3; }
+  .player-right { display: none; }
+}
+
 @media (max-width: 480px) {
   .pl-item {
     grid-template-columns: 28px 48px 1fr auto;
@@ -479,4 +768,12 @@ body {
   }
   .pl-thumb { width: 46px; height: 46px; }
   .player { padding-left: 1rem; padding-right: 1rem; }
+  .big-cover {
+    width: 200px;
+    height: 200px;
+  }
+  .right-panel.expanded .big-cover {
+    width: 240px;
+    height: 240px;
+  }
 }

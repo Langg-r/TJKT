@@ -15,15 +15,60 @@
 
   <!-- ── HEADER ── -->
   <header class="pl-header">
-    <a href="index.html" class="pl-back" aria-label="Kembali">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
-    </a>
-    <div class="pl-header-text">
-      <p class="pl-eyebrow">X TJKT · Skansa Binut</p>
-      <h1 class="pl-title">OUR PLAYLIST</h1>
+    <div class="header-left">
+      <a href="index.html" class="pl-back" aria-label="Kembali">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div class="pl-header-text">
+        <p class="pl-eyebrow">X TJKT · Skansa Binut</p>
+        <h1 class="pl-title">OUR PLAYLIST</h1>
+      </div>
+    </div>
+    <div class="pl-search-wrap">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="pl-search" placeholder="Find Your Music Here..." oninput="filterSongs()" />
     </div>
     <div class="pl-header-art" aria-hidden="true"></div>
   </header>
+
+  <!-- ── MOBILE TABS ── -->
+  <div class="mobile-tabs">
+    <button class="tab-btn active" id="tab-playlist" onclick="switchTab('playlist')">Playlist</button>
+    <button class="tab-btn" id="tab-player" onclick="switchTab('player')">Now Playing</button>
+  </div>
+
+  <div class="split-container" id="split-container">
+    <!-- ── LEFT: SONG LIST ── -->
+    <main class="pl-main" id="pl-main" style="display:none">
+      <p class="pl-count" id="pl-count"></p>
+      <ul class="pl-list" id="pl-list" role="list"></ul>
+    </main>
+
+    <!-- ── DIVIDER ── -->
+    <div class="divider" id="divider"></div>
+
+    <!-- ── RIGHT: COVER & LYRICS ── -->
+    <div class="right-panel" id="right-panel">
+      <div class="expand-btn-wrap">
+        <button class="expand-btn" id="btn-expand" onclick="toggleExpand()" title="Expand">
+          <svg id="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          <svg id="icon-minimize" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="10" y1="14" x2="3" y2="21"/></svg>
+        </button>
+      </div>
+      
+      <div class="display-area">
+        <div class="cover-wrapper" id="cover-wrapper" style="display:none">
+          <img class="big-cover" id="big-cover" src="https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=500" alt="Cover" />
+        </div>
+        
+        <div class="lyrics-panel" id="lyrics-panel" aria-live="polite">
+          <div class="lyrics-inner" id="lyrics-inner">
+            <p class="lyrics-placeholder" id="lyrics-placeholder">♪ Pilih lagu untuk melihat lirik</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ── LOADING STATE ── -->
   <div class="pl-loading" id="pl-loading">
@@ -37,70 +82,69 @@
     <p>Belum ada lagu.<br/>Tambah lagu lewat Editor Panel di halaman utama.</p>
   </div>
 
-  <!-- ── SONG LIST ── -->
-  <main class="pl-main" id="pl-main" style="display:none">
-    <p class="pl-count" id="pl-count"></p>
-    <ul class="pl-list" id="pl-list" role="list"></ul>
-  </main>
-
-  <!-- ── LYRICS PANEL ── -->
-  <div class="lyrics-panel" id="lyrics-panel" aria-live="polite">
-    <div class="lyrics-inner" id="lyrics-inner">
-      <p class="lyrics-placeholder" id="lyrics-placeholder">♪ Pilih lagu untuk melihat lirik</p>
-    </div>
-  </div>
-
   <!-- ── CUSTOM AUDIO PLAYER ── -->
   <div class="player" id="player">
     <!-- now-playing info -->
     <div class="player-info">
-      <img class="player-cover" id="player-cover" src="" alt="Cover" />
+      <div class="mini-cover-wrap">
+        <img class="player-cover" id="player-cover" src="" alt="Cover" />
+      </div>
       <div class="player-meta">
         <p class="player-title" id="player-title">—</p>
         <p class="player-artist" id="player-artist">—</p>
       </div>
     </div>
 
-    <!-- progress bar -->
-    <div class="player-progress-wrap">
-      <span class="player-time" id="player-current">0:00</span>
-      <div class="player-progress" id="player-progress" role="slider" aria-label="Progress">
-        <div class="player-progress-fill" id="player-fill"></div>
-        <div class="player-progress-thumb" id="player-thumb"></div>
+    <!-- main controls & progress -->
+    <div class="player-center">
+      <!-- controls -->
+      <div class="player-controls">
+        <!-- shuffle -->
+        <button class="ctrl-btn ctrl-sm" id="btn-shuffle" onclick="toggleShuffle()" title="Acak">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </button>
+        <!-- prev -->
+        <button class="ctrl-btn" onclick="prevTrack()" title="Sebelumnya" aria-label="Sebelumnya">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19 20L9 12l10-8v16z"/><rect x="5" y="4" width="2" height="16"/></svg>
+        </button>
+        <!-- rewind 10s -->
+        <button class="ctrl-btn ctrl-sm" onclick="seekRelative(-10)" title="-10s" aria-label="Mundur 10 detik">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5.5"/></svg>
+          <span class="ctrl-badge">10</span>
+        </button>
+        <!-- play/pause -->
+        <button class="ctrl-btn ctrl-play" id="btn-play" onclick="togglePlay()" aria-label="Play / Pause">
+          <svg id="icon-play-pl" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="icon-pause-pl" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <!-- fast-forward 10s -->
+        <button class="ctrl-btn ctrl-sm" onclick="seekRelative(10)" title="+10s" aria-label="Maju 10 detik">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-5.5"/></svg>
+          <span class="ctrl-badge">10</span>
+        </button>
+        <!-- next -->
+        <button class="ctrl-btn" onclick="nextTrack()" title="Berikutnya" aria-label="Berikutnya">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="4" width="2" height="16"/></svg>
+        </button>
+        <!-- repeat -->
+        <button class="ctrl-btn ctrl-sm" id="btn-repeat" onclick="toggleRepeat()" title="Ulang">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
       </div>
-      <span class="player-time" id="player-duration">0:00</span>
+
+      <!-- progress bar -->
+      <div class="player-progress-wrap">
+        <span class="player-time" id="player-current">0:00</span>
+        <div class="player-progress" id="player-progress" role="slider" aria-label="Progress">
+          <div class="player-progress-fill" id="player-fill"></div>
+          <div class="player-progress-thumb" id="player-thumb"></div>
+        </div>
+        <span class="player-time" id="player-duration">0:00</span>
+      </div>
     </div>
 
-    <!-- controls -->
-    <div class="player-controls">
-      <!-- shuffle -->
-      <button class="ctrl-btn ctrl-sm" id="btn-shuffle" onclick="toggleShuffle()" title="Acak">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
-      </button>
-      <!-- prev -->
-      <button class="ctrl-btn" onclick="prevTrack()" title="Sebelumnya" aria-label="Sebelumnya">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19 20L9 12l10-8v16z"/><rect x="5" y="4" width="2" height="16"/></svg>
-      </button>
-      <!-- rewind 10s -->
-      <button class="ctrl-btn ctrl-sm" onclick="seekRelative(-10)" title="-10s" aria-label="Mundur 10 detik">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5.5"/></svg>
-        <span class="ctrl-badge">10</span>
-      </button>
-      <!-- play/pause -->
-      <button class="ctrl-btn ctrl-play" id="btn-play" onclick="togglePlay()" aria-label="Play / Pause">
-        <svg id="icon-play-pl" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
-        <svg id="icon-pause-pl" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </button>
-      <!-- fast-forward 10s -->
-      <button class="ctrl-btn ctrl-sm" onclick="seekRelative(10)" title="+10s" aria-label="Maju 10 detik">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-5.5"/></svg>
-        <span class="ctrl-badge">10</span>
-      </button>
-      <!-- next -->
-      <button class="ctrl-btn" onclick="nextTrack()" title="Berikutnya" aria-label="Berikutnya">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="4" width="2" height="16"/></svg>
-      </button>
-      <!-- volume / lyrics toggle -->
+    <!-- extra controls -->
+    <div class="player-right">
       <button class="ctrl-btn ctrl-sm" id="btn-lyrics" onclick="toggleLyricsPanel()" title="Lirik">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </button>

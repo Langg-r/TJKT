@@ -19,6 +19,8 @@ let isShuffle    = false;
 let isPlaying    = false;
 let lrcLines     = [];          // parsed: [{time: sec, text: '...'}]
 let lyricsVisible = true;
+let isRepeat      = false;
+let isExpanding   = false;
 
 const audio = document.getElementById('audio-pl');
 
@@ -43,6 +45,7 @@ async function loadPlaylist() {
 
     songs = data;
     document.getElementById('pl-main').style.display = 'block';
+    document.getElementById('pl-main').classList.add('active'); // for mobile default
     document.getElementById('pl-count').textContent =
       `${songs.length} lagu`;
 
@@ -59,36 +62,52 @@ async function loadPlaylist() {
 /* ──────────────────────────────────────────
    RENDER SONG LIST
    ────────────────────────────────────────── */
-function renderList() {
+function renderList(filteredSongs = null) {
   const list = document.getElementById('pl-list');
   list.innerHTML = '';
+  
+  const displaySongs = filteredSongs || songs;
 
-  songs.forEach((song, i) => {
+  displaySongs.forEach((song, i) => {
+    const actualIdx = filteredSongs ? songs.indexOf(song) : i;
     const li = document.createElement('li');
-    li.className = 'pl-item' + (i === currentIdx ? ' playing' : '');
+    li.className = 'pl-item' + (actualIdx === currentIdx ? ' playing' : '');
     li.setAttribute('role', 'listitem');
     li.style.animationDelay = `${Math.min(i * 0.04, 0.5)}s`;
-    li.onclick = () => playSong(i);
+    li.onclick = () => playSong(actualIdx);
 
     const coverSrc = song.cover_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(song.title)}&background=1c2333&color=1db954&size=200`;
 
     li.innerHTML = `
-      <span class="pl-num">${i + 1}</span>
+      <span class="pl-num">${actualIdx + 1}</span>
       <img class="pl-thumb" src="${esc(coverSrc)}" alt="${esc(song.title)}"
            onerror="this.src='https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=200'" />
       <div class="pl-info">
         <p class="pl-song-title">${esc(song.title)}</p>
         <p class="pl-song-artist">${esc(song.artist)}</p>
       </div>
-      <span class="pl-duration" id="dur-${i}">—</span>
+      <span class="pl-duration" id="dur-${actualIdx}">—</span>
     `;
 
     list.appendChild(li);
 
     // pre-fetch duration for display
-    fetchDuration(song.audio_url, i);
+    fetchDuration(song.audio_url, actualIdx);
   });
+}
+
+function filterSongs() {
+  const query = document.getElementById('pl-search').value.toLowerCase().trim();
+  if (!query) {
+    renderList();
+    return;
+  }
+  const filtered = songs.filter(s => 
+    (s.title || '').toLowerCase().includes(query) || 
+    (s.artist || '').toLowerCase().includes(query)
+  );
+  renderList(filtered);
 }
 
 /* fetch audio duration without fully loading the file */
@@ -113,8 +132,10 @@ function playSong(idx) {
   const song = songs[idx];
 
   // update list highlight
-  document.querySelectorAll('.pl-item').forEach((li, i) => {
-    li.classList.toggle('playing', i === idx);
+  document.querySelectorAll('.pl-item').forEach((li) => {
+    const numEl = li.querySelector('.pl-num');
+    const isPlayingItem = numEl && parseInt(numEl.textContent) === (idx + 1);
+    li.classList.toggle('playing', isPlayingItem);
   });
 
   // update player UI
@@ -122,11 +143,19 @@ function playSong(idx) {
   document.getElementById('player-artist').textContent = song.artist || '—';
 
   const coverEl = document.getElementById('player-cover');
-  coverEl.src = song.cover_url ||
+  const bigCoverEl = document.getElementById('big-cover');
+  
+  const coverSrc = song.cover_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(song.title)}&background=1c2333&color=1db954&size=200`;
-  coverEl.onerror = () => {
-    coverEl.src = `https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=200`;
+  
+  coverEl.src = coverSrc;
+  bigCoverEl.src = coverSrc.replace('size=200', 'size=500');
+  
+  const handleErr = (el) => {
+    el.src = `https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=500`;
   };
+  coverEl.onerror = () => handleErr(coverEl);
+  bigCoverEl.onerror = () => handleErr(bigCoverEl);
 
   // load audio
   audio.src = song.audio_url || '';
@@ -138,8 +167,12 @@ function playSong(idx) {
   renderLyrics();
 
   // scroll the song into view in list
-  const li = document.querySelectorAll('.pl-item')[idx];
-  if (li) li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const listItems = document.querySelectorAll('.pl-item');
+  const activeLi = Array.from(listItems).find(li => {
+     const numEl = li.querySelector('.pl-num');
+     return numEl && parseInt(numEl.textContent) === (idx + 1);
+  });
+  if (activeLi) activeLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /* ──────────────────────────────────────────
@@ -161,6 +194,11 @@ function seekRelative(sec) {
 
 function nextTrack() {
   if (songs.length === 0) return;
+  if (isRepeat) {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+    return;
+  }
   if (isShuffle) {
     let next;
     do { next = Math.floor(Math.random() * songs.length); }
@@ -185,6 +223,49 @@ function prevTrack() {
 function toggleShuffle() {
   isShuffle = !isShuffle;
   document.getElementById('btn-shuffle').classList.toggle('on', isShuffle);
+}
+
+function toggleRepeat() {
+  isRepeat = !isRepeat;
+  document.getElementById('btn-repeat').classList.toggle('on', isRepeat);
+}
+
+function toggleExpand() {
+  const panel = document.getElementById('right-panel');
+  const iconExpand = document.getElementById('icon-expand');
+  const iconMinimize = document.getElementById('icon-minimize');
+  
+  isExpanding = !isExpanding;
+  panel.classList.toggle('expanded', isExpanding);
+  
+  if (isExpanding) {
+    iconExpand.style.display = 'none';
+    iconMinimize.style.display = 'block';
+  } else {
+    iconExpand.style.display = 'block';
+    iconMinimize.style.display = 'none';
+  }
+}
+
+function switchTab(tab) {
+  const plMain = document.getElementById('pl-main');
+  const rightPanel = document.getElementById('right-panel');
+  const btnPl = document.getElementById('tab-playlist');
+  const btnPlayer = document.getElementById('tab-player');
+  
+  if (tab === 'playlist') {
+    plMain.classList.add('active');
+    plMain.style.display = 'block';
+    rightPanel.classList.remove('active');
+    btnPl.classList.add('active');
+    btnPlayer.classList.remove('active');
+  } else {
+    plMain.classList.remove('active');
+    plMain.style.display = 'none';
+    rightPanel.classList.add('active');
+    btnPl.classList.remove('active');
+    btnPlayer.classList.add('active');
+  }
 }
 
 /* ──────────────────────────────────────────
@@ -283,15 +364,9 @@ function parseLRC(raw) {
    ────────────────────────────────────────── */
 function renderLyrics() {
   const inner = document.getElementById('lyrics-inner');
-  const placeholder = document.getElementById('lyrics-placeholder');
-
+  
   if (lrcLines.length === 0) {
-    inner.innerHTML = '';
-    const p = document.createElement('p');
-    p.className = 'lyrics-placeholder';
-    p.id = 'lyrics-placeholder';
-    p.textContent = '♪ Tidak ada lirik tersedia';
-    inner.appendChild(p);
+    inner.innerHTML = '<p class="lyrics-placeholder">♪ Tidak ada lirik tersedia</p>';
     return;
   }
 
@@ -302,6 +377,9 @@ function renderLyrics() {
     p.className = 'lyric-line';
     p.dataset.index = i;
     p.textContent = line.text;
+    p.onclick = () => {
+      audio.currentTime = line.time;
+    };
     inner.appendChild(p);
   });
 }
@@ -352,8 +430,74 @@ function syncLyrics(currentTime) {
    ────────────────────────────────────────── */
 function toggleLyricsPanel() {
   lyricsVisible = !lyricsVisible;
-  document.getElementById('lyrics-panel').classList.toggle('hidden', !lyricsVisible);
-  document.getElementById('btn-lyrics').classList.toggle('on', lyricsVisible);
+  const lyricsPanel = document.getElementById('lyrics-panel');
+  const coverWrapper = document.getElementById('cover-wrapper');
+  const btnLyrics = document.getElementById('btn-lyrics');
+
+  if (lyricsVisible) {
+    lyricsPanel.style.display = 'block';
+    coverWrapper.style.display = 'none';
+    btnLyrics.classList.add('on');
+  } else {
+    lyricsPanel.style.display = 'none';
+    coverWrapper.style.display = 'flex';
+    btnLyrics.classList.remove('on');
+  }
+}
+
+/* ──────────────────────────────────────────
+   DIVIDER DRAGGING
+   ────────────────────────────────────────── */
+function initDivider() {
+  const container = document.getElementById('split-container');
+  const divider = document.getElementById('divider');
+  let isResizing = false;
+
+  divider.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    document.body.style.cursor = 'col-resize';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const offsetLeft = container.offsetLeft;
+    const containerWidth = container.offsetWidth;
+    const pointerX = e.clientX - offsetLeft;
+    
+    // clamp between 20% and 80%
+    let pct = (pointerX / containerWidth) * 100;
+    if (pct < 20) pct = 20;
+    if (pct > 80) pct = 80;
+    
+    container.style.gridTemplateColumns = `${pct}% 4px 1fr`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    isResizing = false;
+    document.body.style.cursor = '';
+  });
+  
+  // touch support
+  divider.addEventListener('touchstart', (e) => {
+    isResizing = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isResizing) return;
+    const offsetLeft = container.offsetLeft;
+    const containerWidth = container.offsetWidth;
+    const pointerX = e.touches[0].clientX - offsetLeft;
+    
+    let pct = (pointerX / containerWidth) * 100;
+    if (pct < 20) pct = 20;
+    if (pct > 80) pct = 80;
+    
+    container.style.gridTemplateColumns = `${pct}% 4px 1fr`;
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    isResizing = false;
+  });
 }
 
 /* ──────────────────────────────────────────
@@ -378,6 +522,9 @@ function esc(str) {
    KEYBOARD SHORTCUTS
    ────────────────────────────────────────── */
 document.addEventListener('keydown', e => {
+  // skip if in search box
+  if (document.activeElement.id === 'pl-search') return;
+
   switch (e.code) {
     case 'Space':
       // prevent page scroll on spacebar
@@ -390,6 +537,9 @@ document.addEventListener('keydown', e => {
     case 'ArrowLeft':  seekRelative(-10); break;
     case 'KeyN':       nextTrack();       break;
     case 'KeyP':       prevTrack();       break;
+    case 'KeyL':       toggleLyricsPanel(); break;
+    case 'KeyS':       toggleShuffle();     break;
+    case 'KeyR':       toggleRepeat();      break;
   }
 });
 
@@ -398,6 +548,7 @@ document.addEventListener('keydown', e => {
    ────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   loadPlaylist();
+  initDivider();
   // show lyrics panel by default
   document.getElementById('btn-lyrics').classList.add('on');
 });
