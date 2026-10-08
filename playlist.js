@@ -45,7 +45,6 @@ async function loadPlaylist() {
 
     songs = data;
     document.getElementById('pl-main').style.display = 'block';
-    document.getElementById('pl-main').classList.add('active'); // for mobile default
     document.getElementById('pl-count').textContent =
       `${songs.length} lagu`;
 
@@ -82,7 +81,7 @@ function renderList(filteredSongs = null) {
     li.innerHTML = `
       <span class="pl-num">${actualIdx + 1}</span>
       <img class="pl-thumb" src="${esc(coverSrc)}" alt="${esc(song.title)}"
-           onerror="this.src='https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=200'" />
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 200 200\\'%3E%3Crect width=\\'200\\' height=\\'200\\' fill=\\'%231c2333\\'/%3E%3Ccircle cx=\\'100\\' cy=\\'100\\' r=\\'75\\' fill=\\'%23000\\'/%3E%3Ccircle cx=\\'100\\' cy=\\'100\\' r=\\'22\\' fill=\\'%231c2333\\'/%3E%3Ccircle cx=\\'100\\' cy=\\'100\\' r=\\'18\\' stroke=\\'%2330363d\\' stroke-width=\\'2\\' fill=\\'none\\'/%3E%3Cpath d=\\'M70 100 h60\\' stroke=\\'%2330363d\\' stroke-width=\\'2\\'/%3E%3C/svg%3E'" />
       <div class="pl-info">
         <p class="pl-song-title">${esc(song.title)}</p>
         <p class="pl-song-artist">${esc(song.artist)}</p>
@@ -152,7 +151,7 @@ function playSong(idx) {
   bigCoverEl.src = coverSrc.replace('size=200', 'size=500');
   
   const handleErr = (el) => {
-    el.src = `https://ui-avatars.com/api/?name=♪&background=1c2333&color=1db954&size=500`;
+    el.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%231c2333'/%3E%3Ccircle cx='100' cy='100' r='75' fill='%23000'/%3E%3Ccircle cx='100' cy='100' r='22' fill='%231c2333'/%3E%3Ccircle cx='100' cy='100' r='18' stroke='%2330363d' stroke-width='2' fill='none'/%3E%3Cpath d='M70 100 h60' stroke='%2330363d' stroke-width='2'/%3E%3C/svg%3E`;
   };
   coverEl.onerror = () => handleErr(coverEl);
   bigCoverEl.onerror = () => handleErr(bigCoverEl);
@@ -234,6 +233,7 @@ function toggleExpand() {
   const panel = document.getElementById('right-panel');
   const iconExpand = document.getElementById('icon-expand');
   const iconMinimize = document.getElementById('icon-minimize');
+  const btnExpand = document.getElementById('btn-expand');
   
   isExpanding = !isExpanding;
   panel.classList.toggle('expanded', isExpanding);
@@ -241,30 +241,11 @@ function toggleExpand() {
   if (isExpanding) {
     iconExpand.style.display = 'none';
     iconMinimize.style.display = 'block';
+    btnExpand.title = 'Minimize';
   } else {
     iconExpand.style.display = 'block';
     iconMinimize.style.display = 'none';
-  }
-}
-
-function switchTab(tab) {
-  const plMain = document.getElementById('pl-main');
-  const rightPanel = document.getElementById('right-panel');
-  const btnPl = document.getElementById('tab-playlist');
-  const btnPlayer = document.getElementById('tab-player');
-  
-  if (tab === 'playlist') {
-    plMain.classList.add('active');
-    plMain.style.display = 'block';
-    rightPanel.classList.remove('active');
-    btnPl.classList.add('active');
-    btnPlayer.classList.remove('active');
-  } else {
-    plMain.classList.remove('active');
-    plMain.style.display = 'none';
-    rightPanel.classList.add('active');
-    btnPl.classList.remove('active');
-    btnPlayer.classList.add('active');
+    btnExpand.title = 'Expand';
   }
 }
 
@@ -433,15 +414,18 @@ function toggleLyricsPanel() {
   const lyricsPanel = document.getElementById('lyrics-panel');
   const coverWrapper = document.getElementById('cover-wrapper');
   const btnLyrics = document.getElementById('btn-lyrics');
+  const btnLyricsToggle = document.getElementById('btn-lyrics-toggle');
 
   if (lyricsVisible) {
     lyricsPanel.style.display = 'block';
     coverWrapper.style.display = 'none';
     btnLyrics.classList.add('on');
+    btnLyricsToggle.classList.add('on');
   } else {
     lyricsPanel.style.display = 'none';
     coverWrapper.style.display = 'flex';
     btnLyrics.classList.remove('on');
+    btnLyricsToggle.classList.remove('on');
   }
 }
 
