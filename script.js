@@ -332,13 +332,26 @@ function initEditorTrigger() {
           e.target.value = '';
           filterSiswa();
         }
-        openEditorModal();
+        openLoginModal();
       }
     }
   });
 }
 
+function openLoginModal() {
+  document.getElementById('login-overlay').classList.add('active');
+  document.getElementById('login-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+  document.getElementById('login-overlay').classList.remove('active');
+  document.getElementById('login-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
 function openEditorModal() {
+  closeLoginModal();
   document.getElementById('editor-overlay').classList.add('active');
   document.getElementById('editor-modal').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -348,6 +361,65 @@ function closeEditorModal() {
   document.getElementById('editor-overlay').classList.remove('active');
   document.getElementById('editor-modal').classList.remove('active');
   document.body.style.overflow = '';
+}
+
+/* ==========================================
+   LOGIN & LOGOUT — Supabase Auth
+   ========================================== */
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const msg = document.getElementById('login-msg');
+  const btnText = document.getElementById('login-btn-text');
+  const btnLoad = document.getElementById('login-btn-load');
+
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+  msg.textContent = '';
+  msg.className = 'login-msg';
+
+  try {
+    const { data, error } = await getSupabase().auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) throw error;
+
+    msg.textContent = '✓ Login berhasil!';
+    msg.classList.add('ok');
+    
+    setTimeout(() => {
+      document.getElementById('form-login').reset();
+      openEditorModal();
+    }, 800);
+
+  } catch (err) {
+    msg.textContent = '✕ Login gagal: ' + (err.message || 'Email atau password salah');
+    msg.classList.add('err');
+    btn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+async function handleLogout() {
+  if (!confirm('Yakin ingin logout?')) return;
+
+  try {
+    const { error } = await getSupabase().auth.signOut();
+    if (error) throw error;
+
+    alert('Logout berhasil!');
+    closeEditorModal();
+    location.reload();
+  } catch (err) {
+    alert('Logout gagal: ' + (err.message || err));
+  }
 }
 
 function switchEditorTab(tab) {

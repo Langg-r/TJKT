@@ -193,12 +193,39 @@
     </button>
   </nav>
 
+  <!-- MODAL LOGIN (trigger: "langskuy") -->
+  <div class="login-overlay" id="login-overlay" onclick="closeLoginModal()"></div>
+  <div class="login-modal" id="login-modal">
+    <div class="login-header">
+      <h2 class="login-title">🔐 Admin Login</h2>
+      <button class="login-close" onclick="closeLoginModal()">✕</button>
+    </div>
+    <form class="login-form" id="form-login" onsubmit="handleLogin(event)">
+      <div class="login-field">
+        <label class="login-label">Email</label>
+        <input class="login-input" type="email" id="login-email" placeholder="admin@example.com" required />
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" type="password" id="login-password" placeholder="••••••••" required />
+      </div>
+      <button class="login-btn" type="submit" id="login-btn">
+        <span id="login-btn-text">Masuk</span>
+        <span id="login-btn-load" style="display:none">Memverifikasi...</span>
+      </button>
+      <p class="login-msg" id="login-msg"></p>
+    </form>
+  </div>
+
   <!-- MODAL EDITOR (trigger: "langskuy") -->
   <div class="editor-overlay" id="editor-overlay" onclick="closeEditorModal()"></div>
   <div class="editor-modal" id="editor-modal">
     <div class="editor-header">
       <h2 class="editor-title">✦ Editor Panel</h2>
-      <button class="editor-close" onclick="closeEditorModal()">✕</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="ebtn-logout" id="ebtn-logout" onclick="handleLogout()">Logout</button>
+        <button class="editor-close" onclick="closeEditorModal()">✕</button>
+      </div>
     </div>
     <!-- TABS -->
     <div class="editor-tabs">
