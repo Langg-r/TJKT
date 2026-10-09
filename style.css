@@ -96,8 +96,8 @@ body {
 }
 
 .loading-logo {
-  width: 130px;
-  height: 130px;
+  width: 170px;
+  height: 170px;
   object-fit: contain;
   animation: logoPop .7s cubic-bezier(.34,1.56,.64,1) both;
 }
@@ -166,16 +166,16 @@ body {
   gap: .5rem;
 }
 
-.nav-logo {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
 .nav-right {
   display: flex;
   align-items: center;
   gap: .8rem;
+}
+
+.nav-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 /* Dark mode button */
@@ -286,7 +286,7 @@ body {
   flex-wrap: wrap;
   max-width: 860px;
   margin: 0 auto;
-  text-align: left;
+  text-align: center;
 }
 
 .vm-heading {
@@ -543,7 +543,7 @@ body {
   align-items: center;
   gap: .3rem;
 }
-.siswa-hobi::before { content: '✦'; font-size: .55rem; }
+.siswa-hobi::before { content: ''; font-size: .55rem; }
 
 .siswa-quote { font-size: .75rem; color: var(--text-mid); line-height: 1.5; font-style: italic; margin-top: .2rem; flex: 1; }
 

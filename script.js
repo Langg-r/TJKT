@@ -23,45 +23,45 @@ function getSupabase() {
    DATA SISWA
    ========================================== */
 const DATA_SISWA = [
-  { nama: "Muhammad Gilang Romadhon",        foto: "Foto/gilang.jpg",   hobi: "Gaming & Coding",               quote: "Code today, lead tomorrow.",                    ig: "--", gender: "laki" },
-  { nama: "Dwi Ananta Susila Yudha",         foto: "Foto/yudha.jpg",    hobi: "Push Rank & Nonton Marapthon",  quote: "Perjalanan jauh dimulai dari satu langkah.",    ig: "--", gender: "laki" },
-  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilangg.jpg",  hobi: "Gooning & Gaming",              quote: "Jangan Melihat Orang Hanya Dari Kulitnya yang hitam legam",     ig: "--", gender: "laki" },
-  { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpg",    hobi: "ngoprek samsung & Elektronik",  quote: "Gagal adalah awal dari Keputus asaan",          ig: "--", gender: "laki" },
-  { nama: "Wan Dizzy Zulfahri",              foto: "Foto/wan.jpg",      hobi: "Volly & Selfie",                quote: "Ada Waktunya untuk Tinggi.",                    ig: "--", gender: "laki" },
-  { nama: "Muhardi",                         foto: "Foto/muhardi.jpg",  hobi: "Olahraga & Balap",              quote: "Aku bisa berhentiin hujan.",                    ig: "--", gender: "laki" },
-  { nama: "Muhammad Wahyu Pratama",          foto: "Foto/wahyu.jpg",    hobi: "Sepak Bola & interval 5 km",   quote: "Wahyu Agak Malas Woi.",                         ig: "--", gender: "laki" },
-  { nama: "Naysila Putri Sarifudin",         foto: "Foto/nay.jpg",      hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Kusmanisya Tarania Malik",        foto: "Foto/ninis.jpg",    hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nurul Arbani Safira",             foto: "Foto/arbani.jpg",   hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nur Adawiyah",                    foto: "Foto/nur.jpg",      hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Seni",                            foto: "Foto/seni.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Valene",                          foto: "Foto/valene.jpg",   hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Khasa Nova Turnip",               foto: "Foto/nova.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Rafasya Dewi Aurora",             foto: "Foto/rora.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Mutiara Oktaini",                 foto: "Foto/mutiara.jpg",  hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Aline Chrissi Situmorang",        foto: "Foto/alin.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Vanitha Ramadhanie",              foto: "Foto/vanitha.jpg",  hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Jesty Novianty",                  foto: "Foto/jesty.jpg",    hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nazwa Khairunnisa",               foto: "Foto/wawa.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Intan Fira Nur Khafifah",         foto: "Foto/intan.jpg",    hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Jessica A Yuwan",                 foto: "Foto/jessica.jpg",  hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Siti Halfira Syaqieb",            foto: "Foto/echa.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Five Aiman Deswati",              foto: "Foto/five.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Mutia Salsabila Hadis",           foto: "Foto/muti.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Syafira Navadila",                foto: "Foto/syafira.jpg",  hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Silfy Safputri",                  foto: "Foto/silfy.jpg",    hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nasywa Sherly N",                 foto: "Foto/sherly.jpg",   hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Cut Ayuni Asri",                  foto: "Foto/cut.jpg",      hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Lussy Aguspriana Putri",          foto: "Foto/lusi.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Azira Three Najwa Sitompul",      foto: "Foto/azira.jpg",    hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Novianti",                        foto: "Foto/novi.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Sabrina Annisa Purwati Pangestu", foto: "Foto/sabrina.jpg",  hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Ashya Maya Gustina",              foto: "Foto/maya.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Shifa Nuha Alviana",              foto: "Foto/nuha.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Lira Novriyanti",                 foto: "Foto/lira.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nur Septiani Putri",              foto: "Foto/nursep.jpg",   hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Devana Puspita",                  foto: "Foto/deva.jpg",     hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
-  { nama: "Nabilla Fitriyani",               foto: "Foto/nabila.jpg",   hobi: "--",                            quote: "--",                                            ig: "--", gender: "perempuan" },
+  { nama: "Muhammad Gilang Romadhon",        foto: "Foto/muhammad-gilang.jpeg",  hobi: "Ngulik Komputer", quote: "wong ko ngene", ig: "glngrmdhn619", gender: "laki" },
+  { nama: "Dwi Ananta Susila Yudha",         foto: "Foto/dwi-ananta.jpeg",       hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilang-rezki.jpeg",     hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Wan Dizzy Zulfahri",              foto: "Foto/wan.jpeg",              hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Muhardi",                         foto: "Foto/muhardi.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Muhammad Wahyu Pratama",          foto: "Foto/muhammad-wahyu.jpeg",   hobi: "--", quote: "--", ig: "--", gender: "laki" },
+  { nama: "Naysila Putri Sarifudin",         foto: "Foto/naysila.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Kusmanisya Tarania Malik",        foto: "Foto/kusmanisya.jpeg",       hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nurul Arbani Safira",             foto: "Foto/nurul-arbani.jpeg",     hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nur Adawiyah",                    foto: "Foto/nur-adawiyah.jpeg",     hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Seni",                            foto: "Foto/seni.jpeg",             hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Valene",                          foto: "Foto/valene.jpeg",           hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Khasa Nova Turnip",               foto: "Foto/khasa.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Rafasya Dewi Aurora",             foto: "Foto/rafasya.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Mutiara Oktaini",                 foto: "Foto/mutiara.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Aline Chrissi Situmorang",        foto: "Foto/aline.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Vanitha Ramadhanie",              foto: "Foto/vanitha.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Jesty Novianty",                  foto: "Foto/jesty.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nazwa Khairunnisa",               foto: "Foto/nazwa.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Intan Fira Nur Khafifah",         foto: "Foto/intan.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Jessica A Yuwan",                 foto: "Foto/jessica.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Siti Halfira Syaqieb",            foto: "Foto/siti-halfira.jpeg",     hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Five Aiman Deswati",              foto: "Foto/five.jpeg",             hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Mutia Salsabila Hadis",           foto: "Foto/mutia-salsabila.jpeg",  hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Syafira Navadila",                foto: "Foto/syafira.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Silfy Safputri",                  foto: "Foto/silfy.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nasywa Sherly N",                 foto: "Foto/nasywa-sherly.jpeg",    hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Cut Ayuni Asri",                  foto: "Foto/cut-ayuni.jpeg",        hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Lussy Aguspriana Putri",          foto: "Foto/lussy.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Azira Three Najwa Sitompul",      foto: "Foto/azira.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Novianti",                        foto: "Foto/novianti.jpeg",         hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Sabrina Annisa Purwati Pangestu", foto: "Foto/sabrina.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Ashya Maya Gustina",              foto: "Foto/ashya.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Shifa Nuha Alviana",              foto: "Foto/shifa.jpeg",            hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Lira Novriyanti",                 foto: "Foto/lira.jpeg",             hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nur Septiani Putri",              foto: "Foto/nur-septiani.jpeg",     hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Devana Puspita",                  foto: "Foto/devana.jpeg",           hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
+  { nama: "Nabilla Fitriyani",               foto: "Foto/nabilla.jpeg",          hobi: "--", quote: "--", ig: "--", gender: "perempuan" },
 ];
 
 /* ==========================================
@@ -1009,4 +1009,120 @@ function dzFileChosen(input, labelId) {
     label.textContent = defaults[labelId] || 'Upload file';
     wrap.classList.remove('has-file');
   }
+}
+
+/* ==========================================
+   FOTO BERSAMA — Upload & Kelola
+   ========================================== */
+async function submitFotbar(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('ebtn-fotbar');
+  const msg     = document.getElementById('emsg-fotbar');
+  const btnText = document.getElementById('ebtn-fotbar-text');
+  const btnLoad = document.getElementById('ebtn-fotbar-load');
+  const file    = document.getElementById('fp-fotbar').files[0];
+
+  if (!file) { showMsg(msg, 'err', '✕ Pilih foto terlebih dulu.'); return; }
+
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+  msg.textContent = '';
+  msg.className = 'editor-msg';
+
+  try {
+    const ext  = file.name.split('.').pop();
+    const path = `fotbar/${Date.now()}.${ext}`;
+
+    const { error: upErr } = await getSupabase().storage
+      .from('media')
+      .upload(path, file, { upsert: true });
+    if (upErr) throw upErr;
+
+    const { data: urlData } = getSupabase().storage.from('media').getPublicUrl(path);
+
+    const { error: dbErr } = await getSupabase().from('gallery').insert({
+      image_url: urlData.publicUrl
+    });
+    if (dbErr) throw dbErr;
+
+    // Tambah foto baru ke galeri di halaman langsung
+    addFotbarToGaleri(urlData.publicUrl);
+
+    showMsg(msg, 'ok', '✓ Foto berhasil diupload!');
+    document.getElementById('form-fotbar').reset();
+    document.getElementById('fp-label-fotbar').textContent = 'Upload foto bersama';
+    document.getElementById('dz-fotbar').classList.remove('has-file');
+
+  } catch (err) {
+    showMsg(msg, 'err', '✕ Gagal: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+function addFotbarToGaleri(url) {
+  const grid = document.getElementById('galeri-grid');
+  if (!grid) return;
+
+  const div = document.createElement('div');
+  div.className = 'galeri-item';
+  div.innerHTML = `
+    <img src="${url}" alt="Foto Bersama" onerror="this.src='https://ui-avatars.com/api/?name=Foto+Bersama&background=DDEEFF&color=5588BB&size=400'" />
+    <div class="galeri-overlay"><span>Foto Bersama</span></div>
+  `;
+  div.onclick = () => openLightbox(url, 'Foto Bersama');
+  grid.appendChild(div);
+}
+
+async function loadFotbarList() {
+  const list = document.getElementById('hapus-fotbar-list');
+  const msg  = document.getElementById('emsg-hapus-fotbar');
+  list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Memuat…</li>';
+  msg.textContent = '';
+
+  const { data, error } = await getSupabase()
+    .from('gallery')
+    .select('id, image_url')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = '';
+    showMsg(msg, 'err', '✕ Gagal: ' + error.message);
+    return;
+  }
+
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada foto.</li>';
+    return;
+  }
+
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'hapus-item';
+    li.id = 'fotbar-item-' + item.id;
+    li.innerHTML = `
+      <div class="hapus-item-info" style="display:flex;align-items:center;gap:.6rem">
+        <img src="${escHtml(item.image_url)}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0" />
+        <div class="hapus-item-name" style="font-size:.75rem">Foto Bersama</div>
+      </div>
+      <button class="ebtn-hapus" onclick="hapusFotbar('${item.id}')">Hapus</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+async function hapusFotbar(id) {
+  const msg = document.getElementById('emsg-hapus-fotbar');
+  if (!confirm('Yakin hapus foto ini?')) return;
+
+  const { error } = await getSupabase().from('gallery').delete().eq('id', id);
+  if (error) { showMsg(msg, 'err', '✕ Gagal: ' + error.message); return; }
+
+  const el = document.getElementById('fotbar-item-' + id);
+  if (el) el.remove();
+  showMsg(msg, 'ok', '✓ Foto berhasil dihapus.');
 }
