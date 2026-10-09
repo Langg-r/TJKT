@@ -232,7 +232,7 @@
       <button class="etab active" id="etab-siswa" onclick="switchEditorTab('siswa')">Tambah Siswa</button>
       <button class="etab" id="etab-lagu" onclick="switchEditorTab('lagu')">Tambah Lagu</button>
       <button class="etab" id="etab-edit" onclick="switchEditorTab('edit')">📷 Foto</button>
-      <button class="etab" id="etab-hapus" onclick="switchEditorTab('hapus')">🗑 Hapus</button>
+      <button class="etab" id="etab-hapus" onclick="switchEditorTab('hapus')">✏️ Edit</button>
     </div>
 
     <!-- FORM TAMBAH SISWA -->
@@ -328,27 +328,43 @@
 
     </div>
 
-    <!-- PANE HAPUS DATA -->
+    <!-- PANE EDIT (menggantikan hapus) -->
     <div class="editor-pane" id="epane-hapus" style="display:none">
 
-      <!-- Hapus Lagu -->
-      <div class="hapus-section">
-        <h3 class="hapus-heading">Hapus Lagu</h3>
-        <p class="hapus-sub">Data akan diambil langsung dari database.</p>
-        <button class="ebtn-load" id="ebtn-load-lagu" onclick="loadLaguList()">Muat Daftar Lagu</button>
-        <ul class="hapus-list" id="hapus-lagu-list"></ul>
-        <p class="editor-msg" id="emsg-hapus-lagu"></p>
+      <!-- Level 1: Pilih kategori -->
+      <div id="edit-level-1">
+        <p class="hapus-sub" style="margin-bottom:1rem">Pilih data yang ingin diedit:</p>
+        <div class="edit-cat-grid">
+          <button class="edit-cat-btn" onclick="editShowList('lagu')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span>Lagu</span>
+          </button>
+          <button class="edit-cat-btn" onclick="editShowList('siswa')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span>Siswa</span>
+          </button>
+        </div>
       </div>
 
-      <div class="hapus-divider"></div>
+      <!-- Level 2: Daftar item -->
+      <div id="edit-level-2" style="display:none">
+        <button class="edit-back-btn" onclick="editBack(1)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+          Kembali
+        </button>
+        <p class="hapus-heading" id="edit-list-title" style="margin:.8rem 0 .4rem"></p>
+        <p class="hapus-sub" id="edit-list-sub"></p>
+        <div class="edit-loading" id="edit-list-loading" style="display:none">Memuat…</div>
+        <ul class="hapus-list" id="edit-item-list"></ul>
+      </div>
 
-      <!-- Hapus Siswa -->
-      <div class="hapus-section">
-        <h3 class="hapus-heading">Hapus Siswa</h3>
-        <p class="hapus-sub">Hapus data siswa dari database Supabase.</p>
-        <button class="ebtn-load" id="ebtn-load-siswa" onclick="loadSiswaList()">Muat Daftar Siswa</button>
-        <ul class="hapus-list" id="hapus-siswa-list"></ul>
-        <p class="editor-msg" id="emsg-hapus-siswa"></p>
+      <!-- Level 3: Form edit item -->
+      <div id="edit-level-3" style="display:none">
+        <button class="edit-back-btn" onclick="editBack(2)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+          Kembali ke daftar
+        </button>
+        <div id="edit-form-container" style="margin-top:.8rem"></div>
       </div>
 
     </div>

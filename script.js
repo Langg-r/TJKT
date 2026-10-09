@@ -441,6 +441,12 @@ function switchEditorTab(tab) {
     document.getElementById('etab-' + t).classList.toggle('active', t === tab);
     document.getElementById('epane-' + t).style.display = t === tab ? 'block' : 'none';
   });
+  // Reset edit panel ke level 1 setiap kali tab dibuka
+  if (tab === 'hapus') {
+    document.getElementById('edit-level-1').style.display = 'block';
+    document.getElementById('edit-level-2').style.display = 'none';
+    document.getElementById('edit-level-3').style.display = 'none';
+  }
 }
 
 /* ==========================================
@@ -1224,3 +1230,305 @@ function idxSeek(sec) {
 document.addEventListener('DOMContentLoaded', () => {
   initIndexMiniPlayer();
 });
+
+/* ==========================================
+   EDIT PANEL — 3-level navigation
+   ========================================== */
+let editCurrentType = null; // 'lagu' | 'siswa'
+
+function editBack(toLevel) {
+  document.getElementById('edit-level-1').style.display = toLevel === 1 ? 'block' : 'none';
+  document.getElementById('edit-level-2').style.display = toLevel === 2 ? 'block' : 'none';
+  document.getElementById('edit-level-3').style.display = 'none';
+}
+
+/* ── Level 2: tampilkan daftar item ── */
+async function editShowList(type) {
+  editCurrentType = type;
+  document.getElementById('edit-level-1').style.display = 'none';
+  document.getElementById('edit-level-2').style.display = 'block';
+  document.getElementById('edit-level-3').style.display = 'none';
+
+  const title = type === 'lagu' ? 'Daftar Lagu' : 'Daftar Siswa';
+  const sub   = type === 'lagu'
+    ? 'Klik lagu untuk mengedit atau menghapus.'
+    : 'Klik siswa untuk mengedit atau menghapus.';
+
+  document.getElementById('edit-list-title').textContent = title;
+  document.getElementById('edit-list-sub').textContent   = sub;
+
+  const list    = document.getElementById('edit-item-list');
+  const loading = document.getElementById('edit-list-loading');
+  list.innerHTML = '';
+  loading.style.display = 'block';
+
+  const query = type === 'lagu'
+    ? getSupabase().from('playlists').select('id, title, artist, cover_url').order('created_at', { ascending: true })
+    : getSupabase().from('students').select('id, name, gender, image_url').order('created_at', { ascending: true });
+
+  const { data, error } = await query;
+  loading.style.display = 'none';
+
+  if (error) {
+    list.innerHTML = `<li style="font-size:.78rem;color:#e05252;padding:.4rem">Gagal: ${error.message}</li>`;
+    return;
+  }
+  if (!data || data.length === 0) {
+    list.innerHTML = `<li style="font-size:.78rem;color:var(--text-soft);padding:.4rem">Belum ada data.</li>`;
+    return;
+  }
+
+  data.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'edit-list-item';
+    li.style.animationDelay = `${i * 0.03}s`;
+
+    if (type === 'lagu') {
+      const cover = item.cover_url || '';
+      li.innerHTML = `
+        <img class="edit-list-item-cover" src="${escHtml(cover)}" onerror="this.style.display='none'" />
+        <div class="edit-list-item-info">
+          <div class="edit-list-item-name">${escHtml(item.title)}</div>
+          <div class="edit-list-item-sub">${escHtml(item.artist || '—')}</div>
+        </div>
+        <svg class="edit-list-item-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+      `;
+      li.onclick = () => editShowFormLagu(item);
+    } else {
+      const bgColor = item.gender === 'laki' ? 'C5D9F0' : 'F5C6D8';
+      const txtColor = item.gender === 'laki' ? '2D5D96' : '8B3A5A';
+      const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=${bgColor}&color=${txtColor}&size=80`;
+      li.innerHTML = `
+        <img class="edit-list-item-cover" src="${item.image_url ? escHtml(item.image_url) : avatar}" onerror="this.src='${avatar}'" />
+        <div class="edit-list-item-info">
+          <div class="edit-list-item-name">${escHtml(item.name)}</div>
+          <div class="edit-list-item-sub">${item.gender === 'laki' ? '♂ Laki-laki' : '♀ Perempuan'}</div>
+        </div>
+        <svg class="edit-list-item-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+      `;
+      li.onclick = () => editShowFormSiswa(item);
+    }
+    list.appendChild(li);
+  });
+}
+
+/* ── Level 3: form edit LAGU ── */
+function editShowFormLagu(song) {
+  document.getElementById('edit-level-2').style.display = 'none';
+  document.getElementById('edit-level-3').style.display = 'block';
+
+  const c = document.getElementById('edit-form-container');
+  c.innerHTML = `
+    <p class="hapus-heading" style="margin-bottom:.8rem">${escHtml(song.title)}</p>
+
+    <label class="elabel">Judul</label>
+    <input class="einput" id="ef-title" value="${escHtml(song.title)}" />
+
+    <label class="elabel" style="margin-top:.5rem">Artis</label>
+    <input class="einput" id="ef-artist" value="${escHtml(song.artist || '')}" />
+
+    <label class="elabel" style="margin-top:.5rem">Cover baru (kosongkan = tidak berubah)</label>
+    <div class="file-pick" onclick="document.getElementById('ef-cover').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'ef-cover',this)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="fp-label" id="ef-label-cover">Upload cover baru</span>
+      <input type="file" id="ef-cover" accept="image/*" style="display:none" onchange="dzFileChosen(this,'ef-label-cover')" />
+    </div>
+
+    <label class="elabel" style="margin-top:.5rem">Audio baru (kosongkan = tidak berubah)</label>
+    <div class="file-pick" onclick="document.getElementById('ef-audio').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'ef-audio',this)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="fp-label" id="ef-label-audio">Upload audio baru</span>
+      <input type="file" id="ef-audio" accept="audio/*" style="display:none" onchange="dzFileChosen(this,'ef-label-audio')" />
+    </div>
+
+    <label class="elabel" style="margin-top:.5rem">Lirik (LRC)</label>
+    <textarea class="einput etextarea" id="ef-lyrics" rows="6">${(song.lyrics || '').replace(/</g,'&lt;')}</textarea>
+    <p class="elabel-hint">Format: <code>[mm:ss.xx] Teks lirik</code></p>
+
+    <p class="editor-msg" id="ef-msg-lagu"></p>
+
+    <div class="edit-action-row">
+      <button class="ebtn-danger" onclick="editHapusLagu('${song.id}')">🗑 Hapus</button>
+      <button class="ebtn-secondary" onclick="editBack(2)">Batal</button>
+    </div>
+    <button class="ebtn-submit" style="width:100%;margin-top:.5rem" id="ef-save-lagu" onclick="editSaveLagu('${song.id}')">
+      <span id="ef-save-lagu-text">Simpan Perubahan</span>
+      <span id="ef-save-lagu-load" style="display:none">Menyimpan…</span>
+    </button>
+  `;
+}
+
+async function editSaveLagu(id) {
+  const msg     = document.getElementById('ef-msg-lagu');
+  const saveBtn = document.getElementById('ef-save-lagu');
+  const btnText = document.getElementById('ef-save-lagu-text');
+  const btnLoad = document.getElementById('ef-save-lagu-load');
+
+  const title   = document.getElementById('ef-title').value.trim();
+  const artist  = document.getElementById('ef-artist').value.trim();
+  const lyrics  = document.getElementById('ef-lyrics').value.trim();
+  const coverFile = document.getElementById('ef-cover').files[0];
+  const audioFile = document.getElementById('ef-audio').files[0];
+
+  if (!title) { showMsg(msg, 'err', '✕ Judul tidak boleh kosong.'); return; }
+
+  saveBtn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+
+  try {
+    const updates = { title, artist, lyrics };
+
+    if (coverFile) {
+      const ext  = coverFile.name.split('.').pop();
+      const path = `covers/${Date.now()}_${title.replace(/\s+/g,'_')}.${ext}`;
+      const { error: e } = await getSupabase().storage.from('media').upload(path, coverFile, { upsert: true });
+      if (e) throw e;
+      const { data: u } = getSupabase().storage.from('media').getPublicUrl(path);
+      updates.cover_url = u.publicUrl;
+    }
+
+    if (audioFile) {
+      const ext  = audioFile.name.split('.').pop();
+      const path = `audio/${Date.now()}_${title.replace(/\s+/g,'_')}.${ext}`;
+      const { error: e } = await getSupabase().storage.from('media').upload(path, audioFile, { upsert: true });
+      if (e) throw e;
+      const { data: u } = getSupabase().storage.from('media').getPublicUrl(path);
+      updates.audio_url = u.publicUrl;
+    }
+
+    const { error } = await getSupabase().from('playlists').update(updates).eq('id', id);
+    if (error) throw error;
+
+    showMsg(msg, 'ok', '✓ Lagu berhasil diperbarui!');
+    // Refresh daftar di level 2
+    setTimeout(() => editShowList('lagu'), 1200);
+
+  } catch (err) {
+    showMsg(msg, 'err', '✕ Gagal: ' + (err.message || err));
+  } finally {
+    saveBtn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+async function editHapusLagu(id) {
+  const msg = document.getElementById('ef-msg-lagu');
+  if (!confirm('Yakin hapus lagu ini? Tindakan tidak bisa dibatalkan.')) return;
+
+  const { error } = await getSupabase().from('playlists').delete().eq('id', id);
+  if (error) { showMsg(msg, 'err', '✕ Gagal: ' + error.message); return; }
+
+  showMsg(msg, 'ok', '✓ Lagu dihapus.');
+  setTimeout(() => editShowList('lagu'), 900);
+}
+
+/* ── Level 3: form edit SISWA ── */
+function editShowFormSiswa(siswa) {
+  document.getElementById('edit-level-2').style.display = 'none';
+  document.getElementById('edit-level-3').style.display = 'block';
+
+  const c = document.getElementById('edit-form-container');
+  c.innerHTML = `
+    <p class="hapus-heading" style="margin-bottom:.8rem">${escHtml(siswa.name)}</p>
+
+    <label class="elabel">Nama</label>
+    <input class="einput" id="ef-name" value="${escHtml(siswa.name)}" />
+
+    <label class="elabel" style="margin-top:.5rem">Hobi</label>
+    <input class="einput" id="ef-hobbies" value="" placeholder="Hobi siswa" />
+
+    <label class="elabel" style="margin-top:.5rem">Quote</label>
+    <input class="einput" id="ef-quote" value="" placeholder="Quote favorit" />
+
+    <label class="elabel" style="margin-top:.5rem">Gender</label>
+    <select class="einput" id="ef-gender">
+      <option value="perempuan" ${siswa.gender === 'perempuan' ? 'selected' : ''}>Perempuan</option>
+      <option value="laki" ${siswa.gender === 'laki' ? 'selected' : ''}>Laki-laki</option>
+    </select>
+
+    <label class="elabel" style="margin-top:.5rem">Foto baru (kosongkan = tidak berubah)</label>
+    <div class="file-pick" onclick="document.getElementById('ef-foto').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'ef-foto',this)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="fp-label" id="ef-label-foto">Upload foto baru</span>
+      <input type="file" id="ef-foto" accept="image/*" style="display:none" onchange="dzFileChosen(this,'ef-label-foto')" />
+    </div>
+
+    <p class="editor-msg" id="ef-msg-siswa"></p>
+
+    <div class="edit-action-row">
+      <button class="ebtn-danger" onclick="editHapusSiswa('${siswa.id}')">🗑 Hapus</button>
+      <button class="ebtn-secondary" onclick="editBack(2)">Batal</button>
+    </div>
+    <button class="ebtn-submit" style="width:100%;margin-top:.5rem" id="ef-save-siswa" onclick="editSaveSiswa('${siswa.id}')">
+      <span id="ef-save-siswa-text">Simpan Perubahan</span>
+      <span id="ef-save-siswa-load" style="display:none">Menyimpan…</span>
+    </button>
+  `;
+
+  // Ambil data hobi & quote dari DB untuk prefill
+  getSupabase().from('students').select('hobbies, quote').eq('id', siswa.id).single()
+    .then(({ data }) => {
+      if (data) {
+        document.getElementById('ef-hobbies').value = data.hobbies || '';
+        document.getElementById('ef-quote').value   = data.quote   || '';
+      }
+    });
+}
+
+async function editSaveSiswa(id) {
+  const msg     = document.getElementById('ef-msg-siswa');
+  const saveBtn = document.getElementById('ef-save-siswa');
+  const btnText = document.getElementById('ef-save-siswa-text');
+  const btnLoad = document.getElementById('ef-save-siswa-load');
+
+  const name     = document.getElementById('ef-name').value.trim();
+  const hobbies  = document.getElementById('ef-hobbies').value.trim();
+  const quote    = document.getElementById('ef-quote').value.trim();
+  const gender   = document.getElementById('ef-gender').value;
+  const fotoFile = document.getElementById('ef-foto').files[0];
+
+  if (!name) { showMsg(msg, 'err', '✕ Nama tidak boleh kosong.'); return; }
+
+  saveBtn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'inline';
+
+  try {
+    const updates = { name, hobbies, quote, gender };
+
+    if (fotoFile) {
+      const ext  = fotoFile.name.split('.').pop();
+      const path = `students/${Date.now()}_${name.replace(/\s+/g,'_')}.${ext}`;
+      const { error: e } = await getSupabase().storage.from('media').upload(path, fotoFile, { upsert: true });
+      if (e) throw e;
+      const { data: u } = getSupabase().storage.from('media').getPublicUrl(path);
+      updates.image_url = u.publicUrl;
+    }
+
+    const { error } = await getSupabase().from('students').update(updates).eq('id', id);
+    if (error) throw error;
+
+    showMsg(msg, 'ok', '✓ Data siswa diperbarui!');
+    setTimeout(() => editShowList('siswa'), 1200);
+
+  } catch (err) {
+    showMsg(msg, 'err', '✕ Gagal: ' + (err.message || err));
+  } finally {
+    saveBtn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoad.style.display = 'none';
+  }
+}
+
+async function editHapusSiswa(id) {
+  const msg = document.getElementById('ef-msg-siswa');
+  if (!confirm('Yakin hapus siswa ini? Tindakan tidak bisa dibatalkan.')) return;
+
+  const { error } = await getSupabase().from('students').delete().eq('id', id);
+  if (error) { showMsg(msg, 'err', '✕ Gagal: ' + error.message); return; }
+
+  showMsg(msg, 'ok', '✓ Siswa dihapus.');
+  setTimeout(() => editShowList('siswa'), 900);
+}

@@ -1571,3 +1571,136 @@ body {
   background: var(--blue-4);
   color: #fff;
 }
+
+/* =========================================
+   EDITOR — NEW EDIT PANEL (3-level)
+   ========================================= */
+.edit-cat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+}
+
+.edit-cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 1.2rem .8rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.edit-cat-btn:hover {
+  border-color: var(--blue-2);
+  color: var(--blue-3);
+  background: var(--blue-0);
+}
+.edit-cat-btn svg { color: var(--blue-2); transition: color var(--transition); }
+.edit-cat-btn:hover svg { color: var(--blue-3); }
+
+.edit-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--blue-3);
+  cursor: pointer;
+  padding: .3rem 0;
+  transition: opacity var(--transition);
+}
+.edit-back-btn:hover { opacity: .7; }
+
+.edit-loading {
+  font-size: .78rem;
+  color: var(--text-soft);
+  padding: .6rem 0;
+}
+
+/* item di daftar edit — bisa diklik penuh */
+.edit-list-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .7rem .85rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  animation: fadeUp .25s ease both;
+  list-style: none;
+}
+.edit-list-item:hover {
+  border-color: var(--blue-2);
+  background: var(--blue-0);
+}
+.edit-list-item-cover {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--blue-0);
+}
+.edit-list-item-info { flex: 1; overflow: hidden; }
+.edit-list-item-name {
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.edit-list-item-sub {
+  font-size: .72rem;
+  color: var(--text-soft);
+}
+.edit-list-item-arrow { color: var(--text-soft); flex-shrink: 0; }
+
+/* action buttons di form edit */
+.edit-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+  margin-top: .8rem;
+}
+.edit-action-row .ebtn-submit { margin-top: 0; }
+
+.ebtn-danger {
+  padding: .72rem 1rem;
+  border: 1.5px solid #e05252;
+  border-radius: 50px;
+  background: none;
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: 600;
+  color: #e05252;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.ebtn-danger:hover { background: #e05252; color: #fff; }
+
+.ebtn-secondary {
+  padding: .72rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  background: none;
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.ebtn-secondary:hover { background: var(--bg-card); color: var(--text-main); }
