@@ -1126,3 +1126,101 @@ async function hapusFotbar(id) {
   if (el) el.remove();
   showMsg(msg, 'ok', '✓ Foto berhasil dihapus.');
 }
+
+/* ==========================================
+   INDEX MINI PLAYER — lanjutkan audio dari playlist
+   ========================================== */
+let idxAudio   = null;
+let idxPlaying = false;
+
+async function initIndexMiniPlayer() {
+  const idx     = parseInt(sessionStorage.getItem('pl_idx'), 10);
+  const time    = parseFloat(sessionStorage.getItem('pl_time') || '0');
+  const playing = sessionStorage.getItem('pl_playing') === '1';
+
+  if (isNaN(idx) || idx < 0) return; // tidak ada state tersimpan
+
+  // Ambil data lagu dari Supabase
+  const sb = getSupabase();
+  if (!sb) return;
+
+  const { data, error } = await sb
+    .from('playlists')
+    .select('title, artist, cover_url, audio_url')
+    .order('created_at', { ascending: true });
+
+  if (error || !data || !data[idx]) return;
+
+  const song = data[idx];
+
+  // Tampilkan mini player
+  const player = document.getElementById('idx-mini-player');
+  if (!player) return;
+  player.style.display = 'flex';
+
+  // Isi info
+  document.getElementById('idx-mini-title').textContent  = song.title  || '—';
+  document.getElementById('idx-mini-artist').textContent = song.artist || '—';
+
+  const cover = document.getElementById('idx-mini-cover');
+  cover.src = song.cover_url || '';
+  cover.onerror = () => { cover.src = ''; };
+
+  // Setup audio
+  idxAudio = new Audio(song.audio_url);
+  idxAudio.currentTime = time;
+
+  idxAudio.addEventListener('timeupdate', () => {
+    if (!idxAudio.duration) return;
+    const pct = (idxAudio.currentTime / idxAudio.duration) * 100;
+    const fill = document.getElementById('idx-mini-fill');
+    if (fill) fill.style.width = pct + '%';
+    // update sessionStorage terus biar state tetap sinkron
+    sessionStorage.setItem('pl_time', idxAudio.currentTime);
+  });
+
+  idxAudio.addEventListener('play', () => {
+    idxPlaying = true;
+    sessionStorage.setItem('pl_playing', '1');
+    document.getElementById('idx-icon-play').style.display  = 'none';
+    document.getElementById('idx-icon-pause').style.display = 'block';
+  });
+
+  idxAudio.addEventListener('pause', () => {
+    idxPlaying = false;
+    sessionStorage.setItem('pl_playing', '0');
+    document.getElementById('idx-icon-play').style.display  = 'block';
+    document.getElementById('idx-icon-pause').style.display = 'none';
+  });
+
+  idxAudio.addEventListener('ended', () => {
+    sessionStorage.removeItem('pl_idx');
+  });
+
+  // Auto-play jika sebelumnya sedang diputar
+  if (playing) {
+    idxAudio.play().catch(() => {
+      // Autoplay diblokir browser — tampilkan tombol play saja
+    });
+  }
+}
+
+function idxTogglePlay() {
+  if (!idxAudio) return;
+  if (idxPlaying) {
+    idxAudio.pause();
+  } else {
+    idxAudio.play().catch(() => {});
+  }
+}
+
+function idxSeek(sec) {
+  if (!idxAudio) return;
+  idxAudio.currentTime = Math.max(0,
+    Math.min(idxAudio.duration || 0, idxAudio.currentTime + sec));
+}
+
+// Jalankan saat halaman siap
+document.addEventListener('DOMContentLoaded', () => {
+  initIndexMiniPlayer();
+});

@@ -58,6 +58,8 @@ async function loadPlaylist() {
     document.getElementById('pl-count').textContent = `${songs.length} lagu`;
 
     renderList();
+    // Restore posisi lagu jika ada state tersimpan
+    restorePlaybackState();
   } catch (err) {
     document.getElementById('pl-loading').style.display = 'none';
     document.getElementById('pl-empty').style.display = 'flex';
@@ -522,6 +524,48 @@ document.addEventListener('keydown', e => {
     case 'KeyP': prevTrack(); break;
   }
 });
+
+/* ──────────────────────────────────────────
+   SESSION STATE — simpan & restore posisi lagu
+   ────────────────────────────────────────── */
+function savePlaybackState() {
+  if (currentIdx < 0 || !audio.src) return;
+  sessionStorage.setItem('pl_idx',     currentIdx);
+  sessionStorage.setItem('pl_time',    audio.currentTime);
+  sessionStorage.setItem('pl_playing', isPlaying ? '1' : '0');
+  sessionStorage.setItem('pl_shuffle', isShuffle ? '1' : '0');
+}
+
+function restorePlaybackState() {
+  const idx     = parseInt(sessionStorage.getItem('pl_idx'), 10);
+  const time    = parseFloat(sessionStorage.getItem('pl_time') || '0');
+  const playing = sessionStorage.getItem('pl_playing') === '1';
+  const shuffle = sessionStorage.getItem('pl_shuffle') === '1';
+
+  if (isNaN(idx) || idx < 0 || idx >= songs.length) return;
+
+  // Terapkan shuffle state
+  if (shuffle) {
+    isShuffle = true;
+    const btn = document.getElementById('btn-shuffle');
+    if (btn) btn.classList.add('on');
+  }
+
+  // Load lagu tanpa autoplay dulu
+  playSong(idx);
+
+  // Setelah metadata load, seek ke posisi terakhir
+  audio.addEventListener('loadedmetadata', () => {
+    audio.currentTime = time;
+    if (!playing) {
+      audio.pause();
+    }
+  }, { once: true });
+}
+
+// Simpan state setiap kali halaman akan ditinggalkan
+window.addEventListener('pagehide', savePlaybackState);
+window.addEventListener('beforeunload', savePlaybackState);
 
 /* ──────────────────────────────────────────
    INIT

@@ -1460,3 +1460,114 @@ body {
 }
 .file-pick.has-file .fp-label { color: var(--blue-3); font-weight: 500; }
 .file-pick.has-file { border-style: solid; border-color: var(--blue-2); }
+
+/* =========================================
+   INDEX MINI PLAYER
+   ========================================= */
+.idx-mini-player {
+  position: fixed;
+  bottom: 62px; /* tepat di atas bottom nav */
+  left: 0; right: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .55rem 1rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideUpMini .3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideUpMini {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* progress bar tipis di bagian paling atas mini player */
+.idx-mini-progress {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--border);
+}
+.idx-mini-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--blue-3);
+  transition: width .4s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+.idx-mini-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--blue-0);
+}
+
+.idx-mini-info {
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.idx-mini-title {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.idx-mini-artist {
+  font-size: .7rem;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.idx-mini-controls {
+  display: flex;
+  align-items: center;
+  gap: .2rem;
+  flex-shrink: 0;
+}
+
+.idx-mini-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition), background var(--transition);
+  text-decoration: none;
+}
+.idx-mini-btn:hover {
+  color: var(--blue-3);
+  background: var(--blue-0);
+}
+
+.idx-mini-play {
+  width: 36px;
+  height: 36px;
+  background: var(--blue-3);
+  color: #fff;
+  border-radius: 50%;
+}
+.idx-mini-play:hover {
+  background: var(--blue-4);
+  color: #fff;
+}
