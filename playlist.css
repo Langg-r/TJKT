@@ -25,12 +25,12 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font);
   background: linear-gradient(160deg, #0f2027, #1a2a3a, #0d1117);
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   padding-bottom: var(--mini-player-h);
   overflow-x: hidden;
 }
-
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 99px; }
@@ -861,3 +861,5 @@ body {
     font-size: 1.3rem;
   }
 }
+
+

@@ -434,9 +434,9 @@ function syncLyrics(currentTime) {
   lastActiveIdx = activeIdx;
 
   // Sync preview lyrics autoscroll via translateY
-  const inner = document.getElementById('lyrics-preview-inner');
-  if (inner) {
-    const previewLines = inner.querySelectorAll('.preview-line');
+  const innerPreview = document.getElementById('lyrics-preview-inner');
+  if (innerPreview) {
+    const previewLines = innerPreview.querySelectorAll('.preview-line');
     previewLines.forEach((el, i) => {
       el.classList.remove('preview-active', 'preview-past', 'preview-future');
       if (i === activeIdx) {
@@ -452,15 +452,15 @@ function syncLyrics(currentTime) {
     if (activeIdx >= 0 && previewLines[activeIdx]) {
       const lineH = previewLines[activeIdx].offsetHeight;
       const offsetY = -(previewLines[activeIdx].offsetTop - lineH * 0.3);
-      inner.style.transform = `translateY(${offsetY}px)`;
+      innerPreview.style.transform = `translateY(${offsetY}px)`;
     }
   }
 
   // Sync fullscreen lyrics
-  const inner = document.getElementById('fl-lyrics-inner');
-  if (!inner) return;
+  const innerFull = document.getElementById('fl-lyrics-inner');
+  if (!innerFull) return;
 
-  const allLines = inner.querySelectorAll('.lyric-line');
+  const allLines = innerFull.querySelectorAll('.lyric-line');
   allLines.forEach((el, i) => {
     el.classList.remove('active', 'near');
     if (i === activeIdx) {
@@ -529,3 +529,4 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', () => {
   loadPlaylist();
 });
+
