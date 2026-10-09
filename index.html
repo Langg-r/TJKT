@@ -221,7 +221,7 @@
   <div class="editor-overlay" id="editor-overlay" onclick="closeEditorModal()"></div>
   <div class="editor-modal" id="editor-modal">
     <div class="editor-header">
-      <h2 class="editor-title">✦ Editor Panel</h2>
+      <h2 class="editor-title">Editor Panel</h2>
       <div style="display: flex; gap: 8px;">
         <button class="ebtn-logout" id="ebtn-logout" onclick="handleLogout()">Logout</button>
         <button class="editor-close" onclick="closeEditorModal()">✕</button>
@@ -252,9 +252,10 @@
           <option value="laki">Laki-laki</option>
         </select>
         <label class="elabel">Foto Siswa</label>
-        <div class="dropzone" id="dz-foto">
-          <span class="dz-text">Tarik & lepas foto di sini atau klik untuk upload</span>
-          <input class="einput" type="file" id="es-foto" accept="image/*" />
+        <div class="file-pick" id="dz-foto" onclick="document.getElementById('es-foto').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'es-foto',this)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="fp-label" id="fp-label-foto">Upload foto</span>
+          <input type="file" id="es-foto" accept="image/*" style="display:none" onchange="dzFileChosen(this,'fp-label-foto')" />
         </div>
         <button class="ebtn-submit" type="submit" id="ebtn-siswa">
           <span id="ebtn-siswa-text">Simpan Siswa</span>
@@ -272,14 +273,16 @@
         <label class="elabel">Artis</label>
         <input class="einput" type="text" id="el-artis" placeholder="Nama artis" required />
         <label class="elabel">Cover / Thumbnail</label>
-        <div class="dropzone" id="dz-cover">
-          <span class="dz-text">Tarik & lepas cover di sini atau klik untuk upload</span>
-          <input class="einput" type="file" id="el-cover" accept="image/*" required />
+        <div class="file-pick" id="dz-cover" onclick="document.getElementById('el-cover').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'el-cover',this)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="fp-label" id="fp-label-cover">Upload cover</span>
+          <input type="file" id="el-cover" accept="image/*" required style="display:none" onchange="dzFileChosen(this,'fp-label-cover')" />
         </div>
         <label class="elabel">File Audio (MP3)</label>
-        <div class="dropzone" id="dz-audio">
-          <span class="dz-text">Tarik & lepas audio di sini atau klik untuk upload</span>
-          <input class="einput" type="file" id="el-audio" accept="audio/*" required />
+        <div class="file-pick" id="dz-audio" onclick="document.getElementById('el-audio').click()" ondragover="dzDragOver(event,this)" ondragleave="dzDragLeave(this)" ondrop="dzDrop(event,'el-audio',this)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="fp-label" id="fp-label-audio">Upload audio</span>
+          <input type="file" id="el-audio" accept="audio/*" required style="display:none" onchange="dzFileChosen(this,'fp-label-audio')" />
         </div>
         <label class="elabel">Lirik (format LRC)</label>
         <textarea class="einput etextarea" id="el-lirik" placeholder="[00:15.00] Teks lirik baris pertama&#10;[00:18.50] Baris kedua lirik" rows="7"></textarea>

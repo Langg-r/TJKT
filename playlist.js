@@ -8,7 +8,17 @@
    ────────────────────────────────────────── */
 const SUPABASE_URL = 'https://sytcbztlwbvfkdfeakct.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5dGNienRsd2J2ZmtkZmVha2N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODYxMDQsImV4cCI6MjEwNjk2MjEwNH0.SmY24xoVlUV4GuWtK00hNciy4WNUyC-4DtqNJvn8FEQ';
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let _sb = null;
+function getSb() {
+  if (_sb) return _sb;
+  try {
+    _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    console.error('Supabase init error:', e);
+  }
+  return _sb;
+}
 
 /* ──────────────────────────────────────────
    STATE
@@ -29,7 +39,7 @@ const audio = document.getElementById('audio-pl');
    ────────────────────────────────────────── */
 async function loadPlaylist() {
   try {
-    const { data, error } = await _sb
+    const { data, error } = await getSb()
       .from('playlists')
       .select('*')
       .order('created_at', { ascending: true });
@@ -52,7 +62,7 @@ async function loadPlaylist() {
     document.getElementById('pl-loading').style.display = 'none';
     document.getElementById('pl-empty').style.display = 'flex';
     document.getElementById('pl-empty').querySelector('p').textContent =
-      'Gagal memuat playlist. Periksa koneksi & konfigurasi Supabase.';
+      `Gagal memuat: ${err.message || JSON.stringify(err)}`;
     console.error('Supabase error:', err);
   }
 }
@@ -377,26 +387,30 @@ function renderLyrics() {
 }
 
 function renderPreviewLyrics() {
-  const preview = document.getElementById('lyrics-preview-content');
-  if (!preview) return;
+  const inner = document.getElementById('lyrics-preview-inner');
+  if (!inner) return;
 
   if (lrcLines.length === 0) {
-    preview.innerHTML = '<p>Tidak ada pratinjau lirik tersedia.</p>';
-    document.getElementById('fs-current-line').textContent = '—';
+    inner.innerHTML = '<p class="preview-line" style="color:rgba(255,255,255,.3)">Tidak ada pratinjau lirik.</p>';
+    const el = document.getElementById('fs-current-line');
+    if (el) el.textContent = '—';
     return;
   }
 
-  // Render all lyrics for autoscroll preview
-  preview.innerHTML = '';
+  inner.innerHTML = '';
   lrcLines.forEach((line, i) => {
     const p = document.createElement('p');
     p.className = 'preview-line';
     p.dataset.index = i;
     p.textContent = line.text;
-    preview.appendChild(p);
+    inner.appendChild(p);
   });
 
-  document.getElementById('fs-current-line').textContent = lrcLines[0]?.text || '—';
+  // reset posisi
+  inner.style.transform = 'translateY(0)';
+
+  const el = document.getElementById('fs-current-line');
+  if (el) el.textContent = lrcLines[0]?.text || '—';
 }
 
 let lastActiveIdx = -1;
@@ -419,10 +433,10 @@ function syncLyrics(currentTime) {
   if (activeIdx === lastActiveIdx) return;
   lastActiveIdx = activeIdx;
 
-  // Sync preview lyrics autoscroll
-  const previewContent = document.getElementById('lyrics-preview-content');
-  if (previewContent) {
-    const previewLines = previewContent.querySelectorAll('.preview-line');
+  // Sync preview lyrics autoscroll via translateY
+  const inner = document.getElementById('lyrics-preview-inner');
+  if (inner) {
+    const previewLines = inner.querySelectorAll('.preview-line');
     previewLines.forEach((el, i) => {
       el.classList.remove('preview-active', 'preview-past', 'preview-future');
       if (i === activeIdx) {
@@ -434,15 +448,11 @@ function syncLyrics(currentTime) {
       }
     });
 
-    // Autoscroll preview to center active line
+    // Geser inner ke atas agar baris aktif selalu muncul di baris pertama
     if (activeIdx >= 0 && previewLines[activeIdx]) {
-      const lineTop = previewLines[activeIdx].offsetTop;
       const lineH = previewLines[activeIdx].offsetHeight;
-      const containerH = previewContent.clientHeight;
-      previewContent.scrollTo({
-        top: lineTop - containerH / 2 + lineH / 2,
-        behavior: 'smooth'
-      });
+      const offsetY = -(previewLines[activeIdx].offsetTop - lineH * 0.3);
+      inner.style.transform = `translateY(${offsetY}px)`;
     }
   }
 

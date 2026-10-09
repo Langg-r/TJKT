@@ -965,3 +965,48 @@ async function saveLagu(id) {
   const subEl = document.querySelector(`#edit-lagu-${id} .hapus-item-sub`);
   if (subEl) subEl.textContent = artist || '—';
 }
+
+/* ==========================================
+   COMPACT FILE PICKER — drag & drop helpers
+   ========================================== */
+function dzDragOver(e, el) {
+  e.preventDefault();
+  el.classList.add('drag-over');
+}
+
+function dzDragLeave(el) {
+  el.classList.remove('drag-over');
+}
+
+function dzDrop(e, inputId, el) {
+  e.preventDefault();
+  el.classList.remove('drag-over');
+  const input = document.getElementById(inputId);
+  const files = e.dataTransfer.files;
+  if (!files.length) return;
+
+  // assign file ke input element via DataTransfer
+  const dt = new DataTransfer();
+  dt.items.add(files[0]);
+  input.files = dt.files;
+
+  // update label
+  const labelId = 'fp-label-' + inputId.replace('es-', '').replace('el-', '');
+  dzFileChosen(input, labelId);
+}
+
+function dzFileChosen(input, labelId) {
+  const label = document.getElementById(labelId);
+  const wrap  = input.closest('.file-pick');
+  if (!label || !wrap) return;
+
+  if (input.files && input.files[0]) {
+    label.textContent = input.files[0].name;
+    wrap.classList.add('has-file');
+  } else {
+    // reset
+    const defaults = { 'fp-label-foto': 'Upload foto', 'fp-label-cover': 'Upload cover', 'fp-label-audio': 'Upload audio' };
+    label.textContent = defaults[labelId] || 'Upload file';
+    wrap.classList.remove('has-file');
+  }
+}

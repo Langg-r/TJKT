@@ -1416,3 +1416,47 @@ body {
 .edit-item {
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
+
+/* =========================================
+   COMPACT FILE PICKER (mengganti dropzone)
+   ========================================= */
+.file-pick {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .62rem 1rem;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.file-pick:hover {
+  border-color: var(--blue-2);
+  background: var(--blue-0);
+}
+.file-pick.drag-over {
+  border-color: var(--blue-3);
+  background: var(--blue-0);
+}
+.file-pick svg {
+  flex-shrink: 0;
+  color: var(--text-soft);
+  transition: color var(--transition);
+}
+.file-pick:hover svg,
+.file-pick.drag-over svg { color: var(--blue-3); }
+
+.fp-label {
+  font-size: .8rem;
+  color: var(--text-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  transition: color var(--transition);
+}
+.file-pick.has-file .fp-label { color: var(--blue-3); font-weight: 500; }
+.file-pick.has-file { border-style: solid; border-color: var(--blue-2); }

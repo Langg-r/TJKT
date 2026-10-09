@@ -544,7 +544,28 @@ body {
 }
 
 .lyrics-preview-content {
-  margin-bottom: 2rem;
+  /* 4 baris × (line-height 1.8 × font 1.05rem ≈ 30px) + margin 0.75rem = ~4 × 49px */
+  height: calc(4 * (1.05rem * 1.8 + .75rem));
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+
+/* inner wrapper digeser via transform untuk smooth scroll */
+.lyrics-preview-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform .45s cubic-bezier(.4,0,.2,1);
+}
+
+/* fade out di bawah untuk kesan terus berlanjut */
+.lyrics-preview-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, rgba(13,31,23,.95));
+  pointer-events: none;
 }
 
 .lyrics-preview-content p {
