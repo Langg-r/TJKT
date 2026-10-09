@@ -1704,3 +1704,50 @@ body {
   transition: var(--transition);
 }
 .ebtn-secondary:hover { background: var(--bg-card); color: var(--text-main); }
+
+/* =========================================
+   GALLERY CONTAINER (foto dinamis Supabase)
+   ========================================= */
+.gallery-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-container:empty { display: none; }
+
+.gallery-item {
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+  aspect-ratio: 4/3;
+  background: var(--blue-0);
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fadeUp .4s ease both;
+}
+.gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-item:hover .galeri-overlay { opacity: 1; }
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s ease;
+}
+
+@media (max-width: 900px) {
+  .gallery-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .gallery-container { grid-template-columns: repeat(2, 1fr); gap: .6rem; }
+}

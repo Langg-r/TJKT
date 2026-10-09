@@ -281,6 +281,7 @@ function scrollToTop() {
 document.addEventListener('DOMContentLoaded', () => {
   renderSiswa(DATA_SISWA);
   initEditorTrigger();
+  fetchGalleryPhotos();
 });
 
 /* ==========================================
@@ -1070,17 +1071,28 @@ async function submitFotbar(e) {
 }
 
 function addFotbarToGaleri(url) {
-  const grid = document.getElementById('galeri-grid');
-  if (!grid) return;
+  const container = document.getElementById('gallery-container');
+  if (!container) return;
 
   const div = document.createElement('div');
-  div.className = 'galeri-item';
-  div.innerHTML = `
-    <img src="${url}" alt="Foto Bersama" onerror="this.src='https://ui-avatars.com/api/?name=Foto+Bersama&background=DDEEFF&color=5588BB&size=400'" />
-    <div class="galeri-overlay"><span>Foto Bersama</span></div>
-  `;
+  div.className = 'gallery-item';
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = 'Foto Bersama';
+  img.loading = 'lazy';
+  img.onerror = () => { div.style.display = 'none'; };
+
+  const overlay = document.createElement('div');
+  overlay.className = 'galeri-overlay';
+  overlay.innerHTML = '<span>Foto Bersama</span>';
+
+  div.appendChild(img);
+  div.appendChild(overlay);
   div.onclick = () => openLightbox(url, 'Foto Bersama');
-  grid.appendChild(div);
+
+  // Sisipkan di awal (foto terbaru di atas)
+  container.insertBefore(div, container.firstChild);
 }
 
 async function loadFotbarList() {
@@ -1531,4 +1543,48 @@ async function editHapusSiswa(id) {
 
   showMsg(msg, 'ok', '✓ Siswa dihapus.');
   setTimeout(() => editShowList('siswa'), 900);
+}
+
+/* ==========================================
+   GALERI KENANGAN — fetch dari Supabase
+   ========================================== */
+async function fetchGalleryPhotos() {
+  const container = document.getElementById('gallery-container');
+  if (!container) return;
+
+  const sb = getSupabase();
+  if (!sb) return;
+
+  const { data, error } = await sb
+    .from('gallery')
+    .select('id, image_url')
+    .order('created_at', { ascending: true });
+
+  if (error || !data || data.length === 0) return;
+
+  container.innerHTML = '';
+
+  data.forEach((item, i) => {
+    if (!item.image_url) return;
+
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.style.animationDelay = `${i * 0.05}s`;
+
+    const img = document.createElement('img');
+    img.src = item.image_url;
+    img.alt = 'Foto Bersama';
+    img.loading = 'lazy';
+    img.onerror = () => { div.style.display = 'none'; };
+
+    const overlay = document.createElement('div');
+    overlay.className = 'galeri-overlay';
+    overlay.innerHTML = '<span>Foto Bersama</span>';
+
+    div.appendChild(img);
+    div.appendChild(overlay);
+    div.onclick = () => openLightbox(item.image_url, 'Foto Bersama');
+
+    container.appendChild(div);
+  });
 }

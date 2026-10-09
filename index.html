@@ -118,12 +118,18 @@
   <section class="section-galeri" id="section-foto">
     <h2 class="section-title">Galeri Kenangan</h2>
     <p class="galeri-sub">Momen berharga yang takkan terlupakan bersama keluarga besar TKJ Skansa Binut.</p>
+
+    <!-- Foto utama statis -->
     <div class="galeri-grid" id="galeri-grid">
       <div class="galeri-item galeri-big" id="fotbar-utama" onclick="openLightbox('Foto/fotbar-utama.jpg', 'Foto Bersama')">
         <img src="Foto/fotbar-utama.jpg" alt="Foto Bersama" onerror="this.src='https://ui-avatars.com/api/?name=Foto+Bersama&background=DDEEFF&color=5588BB&size=600'" />
         <div class="galeri-overlay"><span>Foto Bersama</span></div>
       </div>
     </div>
+
+    <!-- Foto dari Supabase (dinamis) -->
+    <div class="gallery-container" id="gallery-container"></div>
+
   </section>
 
   <!-- FOOTER -->
