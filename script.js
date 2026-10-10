@@ -25,7 +25,7 @@ function getSupabase() {
 const DATA_SISWA = [
   { nama: "Muhammad Gilang Romadhon",        foto: "Foto/muhammad-gilang.jpeg",  hobi: "Ngulik Komputer",          quote: "apa aja",                                                        ig: "glngrmdhn619",      gender: "laki" },
   { nama: "Dwi Ananta Susila Yudha",         foto: "Foto/dwi-ananta.jpeg",       hobi: "Volly",                    quote: "If it's meant to be, it'll be.",                                 ig: "hexos_02",          gender: "laki" },
-  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilang-rezki.jpeg",     hobi: "Masukka Teks...",          quote: "lorem ipsum dolor sit amet",                                ig: "lngrzvn_",                gender: "laki" },
+  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilang-rezki.jpeg",     hobi: "Masukkan Teks...",          quote: "lorem ipsum dolor sit amet",                                ig: "lngrzvn_",                gender: "laki" },
   { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpeg",            hobi: "CODan di Batam",         quote: "Jangan fanatik didunia yang munafik",                            ig: "Xiaozsi67",         gender: "laki" },
   { nama: "Wan Dizzy Zulfahri",              foto: "Foto/wan.jpeg",              hobi: "Volly",                    quote: "Ongok lah kau ni",                                               ig: "wandizzy05",        gender: "laki" },
   { nama: "Muhardi",                         foto: "Foto/muhardi.jpeg",          hobi: "Bola",                     quote: "Aku bisa berhentiin hujan",                                      ig: "bujee_03",          gender: "laki" },
