@@ -25,8 +25,8 @@ function getSupabase() {
 const DATA_SISWA = [
   { nama: "Muhammad Gilang Romadhon",        foto: "Foto/muhammad-gilang.jpeg",  hobi: "Ngulik Komputer",          quote: "apa aja",                                                        ig: "glngrmdhn619",      gender: "laki" },
   { nama: "Dwi Ananta Susila Yudha",         foto: "Foto/dwi-ananta.jpeg",       hobi: "Volly",                    quote: "If it's meant to be, it'll be.",                                 ig: "hexos_02",          gender: "laki" },
-  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilang-rezki.jpeg",     hobi: "Masukkan Teks...",          quote: "lorem ipsum dolor sit amet",                                ig: "lngrzvn_",                gender: "laki" },
-  { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpeg",            hobi: "CODan di Batam",         quote: "Jangan fanatik didunia yang munafik",                            ig: "Xiaozsi67",         gender: "laki" },
+  { nama: "Gilang Rezki Oktavian",           foto: "Foto/gilang-rezki.jpeg",     hobi: "Masukkan Teks...",         quote: "lorem ipsum dolor sit amet",                                ig: "lngrzvn_",                gender: "laki" },
+  { nama: "Rizky Trian Purba",               foto: "Foto/rizky.jpeg",            hobi: "CODan di Batam",           quote: "Jangan fanatik didunia yang munafik",                            ig: "Xiaozsi67",         gender: "laki" },
   { nama: "Wan Dizzy Zulfahri",              foto: "Foto/wan.jpeg",              hobi: "Volly",                    quote: "Ongok lah kau ni",                                               ig: "wandizzy05",        gender: "laki" },
   { nama: "Muhardi",                         foto: "Foto/muhardi.jpeg",          hobi: "Bola",                     quote: "Aku bisa berhentiin hujan",                                      ig: "bujee_03",          gender: "laki" },
   { nama: "Muhammad Wahyu Pratama",          foto: "Foto/muhammad-wahyu.jpeg",   hobi: "Lari",                     quote: "Trust the process",                                              ig: "mhmdwhyprtm_",      gender: "laki" },
@@ -52,7 +52,7 @@ const DATA_SISWA = [
   { nama: "Silfy Safputri",                  foto: "Foto/silfy.jpeg",            hobi: "Jalan, makan, karaoke",    quote: "Ayok makan",                                                     ig: "slfysfptri",        gender: "perempuan" },
   { nama: "Nasywa Sherly N",                 foto: "Foto/nasywa-sherly.jpeg",    hobi: "Olahraga",                 quote: "Bebas berekspresi",                                              ig: "rlyy_saa",          gender: "perempuan" },
   { nama: "Cut Ayuni Asri",                  foto: "Foto/cut-ayuni.jpeg",        hobi: "Nonton",                   quote: "Diam, tumbuh, bersinar",                                         ig: "ilyyy_asriii",      gender: "perempuan" },
-  { nama: "Lussy Aguspriana Putri",          foto: "Foto/lussy.jpeg",            hobi: "--",                       quote: "--",                                                             ig: "--",                gender: "perempuan" },
+  { nama: "Lussy Aguspriana Putri",          foto: "Foto/lussy.jpeg",            hobi: "Jalan-jalan, Nari",        quote: "jalanin aja",                                                             ig: "--",                gender: "perempuan" },
   { nama: "Azira Three Najwa Sitompul",      foto: "Foto/azira.jpeg",            hobi: "Makan, tidur",             quote: "Jangan lupa bobo teman-teman!",                                  ig: "azirathreenw_",     gender: "perempuan" },
   { nama: "Novianti",                        foto: "Foto/novianti.jpeg",         hobi: "Jajan",                    quote: "Ya gitu la",                                                     ig: "nvyan.tii",         gender: "perempuan" },
   { nama: "Sabrina Annisa Purwati Pangestu", foto: "Foto/sabrina.jpeg",          hobi: "Menggambar, jurnaling",    quote: "Life is a blank canvas, n I'm just sketching my way.",           ig: "sabrinnssaa",       gender: "perempuan" },
@@ -1085,7 +1085,6 @@ function addFotbarToGaleri(url) {
 
   const overlay = document.createElement('div');
   overlay.className = 'galeri-overlay';
-  overlay.innerHTML = '<span>Foto Bersama</span>';
 
   div.appendChild(img);
   div.appendChild(overlay);
@@ -1579,7 +1578,6 @@ async function fetchGalleryPhotos() {
 
     const overlay = document.createElement('div');
     overlay.className = 'galeri-overlay';
-    overlay.innerHTML = '<span>Foto Bersama</span>';
 
     div.appendChild(img);
     div.appendChild(overlay);
