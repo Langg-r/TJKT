@@ -174,6 +174,34 @@ function playSong(idx) {
   audio.load();
   audio.play().catch(err => console.warn('Autoplay blocked:', err));
 
+  // ── Media Session API ──
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title:  song.title  || 'Unknown Title',
+      artist: song.artist || 'Unknown Artist',
+      album:  'Our Playlist - TJKT Skansa Binut',
+      artwork: song.cover_url
+        ? [{ src: song.cover_url, sizes: '512x512', type: 'image/jpeg' }]
+        : []
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
+      audio.play().catch(() => {});
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+      audio.pause();
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      prevTrack();
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      nextTrack();
+    });
+  }
+
   // Parse lyrics
   lrcLines = parseLRC(song.lyrics || '');
   renderLyrics();
